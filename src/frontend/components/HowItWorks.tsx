@@ -148,7 +148,7 @@ function HowItWorks() {
             viewport={{ once: true, amount: 0.15 }}
             className="grid gap-5 sm:grid-cols-2"
           >
-            {steps.map((step, index) => {
+           {steps.map((step) => {
               const Icon = step.icon
 
               return (

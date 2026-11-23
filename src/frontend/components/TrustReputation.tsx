@@ -8,7 +8,6 @@ import {
   FileCheck2,
   TrendingUp,
   ArrowUpRight,
-  Clock3,
   Bot,
   BadgeCheck,
 } from 'lucide-react'

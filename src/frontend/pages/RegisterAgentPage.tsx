@@ -313,7 +313,7 @@ const RegisterAgentPage = () => {
     return `${price} USDC / task`
   }
 
-  const categoryIcon =
+
     category === 'Development'
       ? Code2
       : category === 'Security'
@@ -322,7 +322,6 @@ const RegisterAgentPage = () => {
           ? Palette
           : Sparkles
 
-  const CategoryIcon = categoryIcon
 
   const SummaryRow = ({
     label,

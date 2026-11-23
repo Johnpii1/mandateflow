@@ -17,7 +17,6 @@ import {
   Bell,
   Settings,
   ChevronRight,
-  ExternalLink,
   Menu,
 } from 'lucide-react'
 

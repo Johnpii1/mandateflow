@@ -1,0 +1,228 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+@import "tailwindcss";
+
+/* ========================================
+   MANDATEFLOW DESIGN SYSTEM
+======================================== */
+
+@theme {
+  --color-milk: #FAFAF6;
+  --color-white: #FFFFFF;
+
+  --color-brand: #00A87D;
+  --color-brand-light: #00D6A0;
+  --color-brand-dark: #008A66;
+  --color-brand-soft: #E6F8F1;
+
+  --color-heading: #101B1B;
+  --color-text: #586461;
+  --color-muted: #929D98;
+
+  --color-border: #E8EDE8;
+  --color-surface: #FFFFFF;
+
+  --font-sans: "Inter", sans-serif;
+  --font-heading: "Inter", sans-serif;
+}
+
+/* ========================================
+   ROOT VARIABLES
+======================================== */
+
+:root {
+  font-family: "Inter", sans-serif;
+  background: #FFFFFF;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  --bg: #FFFFFF;
+  --surface: #FFFFFF;
+
+  --primary: #00A87D;
+  --primary-light: #00D6A0;
+  --primary-dark: #008A66;
+
+  --border: #E8EDE8;
+
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.07);
+  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.09);
+}
+
+/* ========================================
+   GLOBAL RESET
+======================================== */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  font-family: "Inter", sans-serif;
+}
+
+/* ========================================
+   HTML
+======================================== */
+
+html {
+  scroll-behavior: smooth;
+  background: var(--bg);
+  font-family: "Inter", sans-serif;
+}
+
+/* ========================================
+   BODY
+======================================== */
+
+body {
+  min-width: 320px;
+  min-height: 100vh;
+  margin: 0;
+
+  font-family: "Inter", sans-serif;
+  font-size: 16px;
+  line-height: 1.65;
+  font-weight: 400;
+
+  background: var(--bg);
+}
+
+/* ========================================
+   APP ROOT
+======================================== */
+
+#root {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  font-family: "Inter", sans-serif;
+}
+
+/* ========================================
+   TYPOGRAPHY
+======================================== */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Inter", sans-serif;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.045em;
+}
+
+p {
+  margin: 0;
+}
+
+a {
+  font-family: "Inter", sans-serif;
+  text-decoration: none;
+}
+
+button,
+input,
+textarea,
+select {
+  font-family: "Inter", sans-serif;
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+/* ========================================
+   SELECTION
+======================================== */
+
+::selection {
+  background: var(--primary);
+}
+
+/* ========================================
+   SCROLLBAR
+======================================== */
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: #CBD8D1;
+  border-radius: 20px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary);
+}
+
+/* ========================================
+   REUSABLE BRAND UTILITIES
+======================================== */
+
+.brand-gradient {
+  background: linear-gradient(
+    135deg,
+    #00D6A0 0%,
+    #00A87D 55%,
+    #008A66 100%
+  );
+}
+
+.brand-text {
+  background: linear-gradient(
+    135deg,
+    #00A87D,
+    #008A66
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(232, 237, 232, 0.9);
+  backdrop-filter: blur(16px);
+  box-shadow: var(--shadow-sm);
+}
+
+/* ========================================
+   RESPONSIVE TYPOGRAPHY
+======================================== */
+
+@media (max-width: 768px) {
+  body {
+    font-size: 15px;
+  }
+}
+
+/* ========================================
+   REDUCED MOTION ACCESSIBILITY
+======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
