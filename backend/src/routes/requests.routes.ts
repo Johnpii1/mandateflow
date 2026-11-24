@@ -91,7 +91,7 @@ router.patch('/:id/respond', requireAuth, asyncHandler(async (req, res) => {
   request.responseNote = input.responseNote
   request.respondedAt = new Date()
   await request.save()
-  res.json({ message: `Request ${input.decision}ed.`, request })
+  res.json({ message: input.decision === 'accept' ? 'Request accepted.' : 'Request declined.', request })
 }))
 
 router.post('/:id/submit-work', requireAuth, asyncHandler(async (req, res) => {
