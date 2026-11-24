@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from "motion/react";
 import Mandateflow from "../../../assets/images/logomd.png";
 import { toast } from "sonner";
 import { ArrowUpRight, Menu, X, Sparkles } from "lucide-react";
+import LaunchAppModal from "../modals/LaunchAppModal";
 
 const navLinks = [
   {
@@ -33,6 +34,7 @@ const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState("");
+  const [launchModalOpen, setLaunchModalOpen] = useState(false);
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -68,6 +70,7 @@ const Navbar = () => {
           behavior: "smooth",
           block: "start",
         });
+
         setActiveSection(sectionId);
       }
     }, 200);
@@ -131,10 +134,12 @@ const Navbar = () => {
     if (href === "/") {
       setActiveSection("");
       navigate("/");
+
       window.scrollTo({
         top: 0,
         behavior: "smooth",
       });
+
       return;
     }
 
@@ -183,17 +188,18 @@ const Navbar = () => {
     return location.pathname === href;
   };
 
-  // Launch app
+  // Open Launch App modal
   const launchApp = () => {
-    toast.success("Launching MandateFlow...", {
-      duration: 1800,
-    });
-
     closeMenu();
-    navigate("/app");
+    setLaunchModalOpen(true);
   };
 
-  // Shared desktop navigation styling
+  // Navigate to Dashboard
+  const openDashboard = () => {
+    closeMenu();
+    navigate("/dashboard");
+  };
+
   const desktopLinkClass = (href: string) =>
     `rounded-xl border px-4 py-2 text-[13px] font-semibold transition-all duration-300 ${
       isActive(href)
@@ -218,7 +224,6 @@ const Navbar = () => {
         }`}
       >
         <nav className="mx-auto flex h-[68px] max-w-[1440px] items-center justify-between px-5 sm:px-8">
-
           {/* LOGO */}
           <Link
             to="/"
@@ -237,7 +242,7 @@ const Navbar = () => {
           </Link>
 
           {/* DESKTOP NAVIGATION */}
-          <div className="hidden items-center gap-2 lg:flex font-bold">
+          <div className="hidden items-center gap-2 font-bold lg:flex">
             {navLinks.map((link, index) => (
               <motion.div
                 key={link.name}
@@ -261,8 +266,23 @@ const Navbar = () => {
             ))}
           </div>
 
-          {/* DESKTOP LAUNCH BUTTON */}
-          <div className="hidden lg:block">
+          {/* DESKTOP DASHBOARD + LAUNCH BUTTON */}
+          <div className="hidden items-center gap-3 lg:flex">
+            <motion.button
+              type="button"
+              onClick={openDashboard}
+              whileHover={{ y: -2, scale: 1.02 }}
+              whileTap={{ scale: 0.97 }}
+              className={`flex items-center gap-2 rounded-lg border px-4 py-2.5 text-xs font-bold transition-all duration-300 ${
+                location.pathname === "/dashboard"
+                  ? "border-[#00A87D]/40 bg-[#E6F8F1] text-[#008A66]"
+                  : "border-[#DCE9E2] bg-white text-[#263B33] hover:border-[#00A87D]/40 hover:bg-[#E6F8F1] hover:text-[#008A66]"
+              }`}
+            >
+              Dashboard
+              <ArrowUpRight size={15} />
+            </motion.button>
+
             <motion.button
               type="button"
               onClick={launchApp}
@@ -270,7 +290,7 @@ const Navbar = () => {
               whileTap={{ scale: 0.97 }}
               className="group relative flex items-center gap-2 overflow-hidden rounded-lg bg-[#00A87D] px-4 py-2.5 text-xs font-bold text-white shadow-[0_4px_12px_rgba(0,168,125,0.14)] transition-all duration-300 hover:bg-[#008A66] hover:shadow-[0_6px_18px_rgba(0,168,125,0.22)]"
             >
-              <span className="relative z-10 font-bold">
+              <span className="relative z-10">
                 Launch App
               </span>
 
@@ -393,12 +413,26 @@ const Navbar = () => {
                   ))}
                 </motion.div>
 
+                {/* MOBILE DASHBOARD + LAUNCH BUTTON */}
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.25 }}
-                  className="mt-5"
+                  className="mt-5 flex flex-col gap-3"
                 >
+                  <button
+                    type="button"
+                    onClick={openDashboard}
+                    className={`flex w-full items-center justify-center gap-2 rounded-xl border px-5 py-3 text-sm font-bold transition-all ${
+                      location.pathname === "/dashboard"
+                        ? "border-[#00A87D]/40 bg-[#E6F8F1] text-[#008A66]"
+                        : "border-[#DCE9E2] bg-white text-[#263B33] hover:border-[#00A87D]/40 hover:bg-[#E6F8F1] hover:text-[#008A66]"
+                    }`}
+                  >
+                    Dashboard
+                    <ArrowUpRight size={17} />
+                  </button>
+
                   <button
                     type="button"
                     onClick={launchApp}
@@ -417,6 +451,13 @@ const Navbar = () => {
           </>
         )}
       </AnimatePresence>
+
+      {/* LAUNCH APP MODAL */}
+      <LaunchAppModal
+        isOpen={launchModalOpen}
+        onClose={() => setLaunchModalOpen(false)}
+        destination="/explore"
+      />
     </>
   );
 };

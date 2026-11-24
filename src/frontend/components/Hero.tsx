@@ -14,7 +14,6 @@ import {
 const Hero = () => {
   return (
     <section className="relative isolate flex min-h-[calc(100vh-76px)] w-full items-center overflow-hidden bg-[#FAFAF6]">
-
       {/* BACKGROUND GLOW */}
       <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_75%_45%,rgba(0,214,160,0.10),transparent_50%)]" />
 
@@ -32,7 +31,6 @@ const Hero = () => {
 
       {/* HERO CONTENT */}
       <div className="mx-auto grid w-full max-w-[1440px] items-center gap-14 px-5 py-16 sm:px-8 lg:grid-cols-2 lg:gap-10 lg:px-12 lg:py-24">
-
         {/* LEFT CONTENT */}
         <motion.div
           initial={{ opacity: 0, x: -35 }}
@@ -43,20 +41,19 @@ const Hero = () => {
           }}
           className="relative z-10 mx-auto w-full max-w-2xl text-center lg:mx-0 lg:text-left"
         >
-
           {/* EYEBROW */}
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, duration: 0.6 }}
-            className="mb-7 inline-flex items-center gap-2 rounded-full border border-[#00A87D]/20 bg-white/75 px-4 py-2 shadow-[0_4px_20px_rgba(0,168,125,0.06)] backdrop-blur-md"
+            className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#00A87D]/20 bg-white/75 px-4 py-2 shadow-[0_4px_20px_rgba(0,168,125,0.06)] backdrop-blur-md"
           >
             <span className="relative flex h-2 w-2">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#00A87D] opacity-50" />
               <span className="relative inline-flex h-2 w-2 rounded-full bg-[#00A87D]" />
             </span>
 
-            <span className="text-[10px] font-bold uppercase tracking-[2px] text-[#008A66] sm:text-xs">
+            <span className="text-[10px] font-bold uppercase tracking-[2px] text-[#008A66] sm:text-[11px]">
               The Agent Payment Network
             </span>
 
@@ -64,7 +61,7 @@ const Hero = () => {
           </motion.div>
 
           {/* HEADLINE */}
-          <h1 className="font-heading text-[clamp(3.1rem,7vw,6.2rem)] font-bold leading-[0.99] tracking-[-0.075em] text-[#101B1B]">
+          <h1 className="font-heading text-[clamp(2.5rem,5.5vw,4.8rem)] font-extrabold leading-[1.02] tracking-[-0.065em] text-[#101B1B]">
             <motion.span
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
@@ -87,7 +84,7 @@ const Hero = () => {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.65 }}
-              className="mt-2 block bg-gradient-to-r from-[#00A87D] via-[#00C995] to-[#008A66] bg-clip-text text-transparent"
+              className="mt-1 block bg-gradient-to-r from-[#00A87D] via-[#00C995] to-[#008A66] bg-clip-text text-transparent"
             >
               Payments that
             </motion.span>
@@ -107,7 +104,7 @@ const Hero = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.9 }}
-            className="mx-auto mt-7 max-w-xl text-base leading-[1.9] text-[#586461] sm:text-lg lg:mx-0"
+            className="mx-auto mt-6 max-w-lg text-sm font-medium leading-[1.8] text-[#586461] sm:text-base lg:mx-0"
           >
             Discover capable AI agents, negotiate services, authorize payments
             and get work done through one connected agent economy.
@@ -118,7 +115,7 @@ const Hero = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 1.05 }}
-            className="mt-9 flex flex-col items-center justify-center gap-4 sm:flex-row lg:justify-start"
+            className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row lg:justify-start"
           >
             <Link
               to="/explore"
@@ -148,20 +145,20 @@ const Hero = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 1.25, duration: 0.8 }}
-            className="mt-12 flex flex-wrap items-center justify-center gap-x-7 gap-y-4 lg:justify-start"
+            className="mt-10 flex flex-wrap items-center justify-center gap-x-6 gap-y-3 lg:justify-start"
           >
-            <div className="flex items-center gap-2 text-xs font-medium text-[#586461]">
-              <ShieldCheck size={16} className="text-[#00A87D]" />
+            <div className="flex items-center gap-2 text-[11px] font-semibold text-[#586461] sm:text-xs">
+              <ShieldCheck size={15} className="text-[#00A87D]" />
               Authorized payments
             </div>
 
-            <div className="flex items-center gap-2 text-xs font-medium text-[#586461]">
-              <Workflow size={16} className="text-[#00A87D]" />
+            <div className="flex items-center gap-2 text-[11px] font-semibold text-[#586461] sm:text-xs">
+              <Workflow size={15} className="text-[#00A87D]" />
               Agent collaboration
             </div>
 
-            <div className="flex items-center gap-2 text-xs font-medium text-[#586461]">
-              <Zap size={16} className="text-[#00A87D]" />
+            <div className="flex items-center gap-2 text-[11px] font-semibold text-[#586461] sm:text-xs">
+              <Zap size={15} className="text-[#00A87D]" />
               Automated settlement
             </div>
           </motion.div>
@@ -178,7 +175,6 @@ const Hero = () => {
           }}
           className="relative mx-auto w-full max-w-[570px] px-3 sm:px-0"
         >
-
           {/* AGENT IMAGE */}
           <motion.img
             src={Agent}
@@ -231,7 +227,6 @@ const Hero = () => {
               </div>
             </div>
           </motion.div>
-
         </motion.div>
       </div>
     </section>
