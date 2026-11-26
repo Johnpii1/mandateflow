@@ -1332,9 +1332,10 @@ const AgentDashboardPage = () => {
           </div>
 
           <div className="flex shrink-0 items-center gap-2 sm:gap-3">
-            <span className="hidden rounded-full bg-[#E6F8F1] px-4 py-2 text-sm font-semibold text-[#008A66] sm:inline-flex">
-              Demo Workspace
-            </span>
+            <button className="flex justify-center items-center gap-2 rounded-lg bg-[#E6F8F1] px-4 py-2 text-sm font-semibold text-[#008A66] sm:inline-flex hover:bg-[#008A66]/90 hover:text-white">
+              Launch app
+              <ArrowUpRight size={17} />
+            </button>
 
             <Link
               to="/register-agent"

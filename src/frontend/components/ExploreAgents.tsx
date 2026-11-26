@@ -293,15 +293,20 @@ function ExploreAgents() {
                   {/* Explore link */}
                   <Link
                     to="/explore"
-                    className="mt-4 inline-flex w-fit items-center gap-1.5 text-xs font-semibold text-[#008A66] transition-colors hover:text-[#005F49]"
+                    className="mt-4 inline-flex w-fit items-center gap-1.5 text-xs font-semibold text-white transition-colors hover:text-white"
                   >
-                    Explore agent
-                    <motion.span
+                    <button className='flex justify-center items-center  rounded-lg py-2 px-2 bg-[#008A66]'>
+Explore agent
+
+<motion.span
                       whileHover={{ x: 4, y: -3 }}
                       transition={{ duration: 0.2 }}
                     >
                       <ArrowUpRight size={14} />
                     </motion.span>
+
+                    </button>
+                    
                   </Link>
                 </div>
               </motion.article>
