@@ -389,12 +389,18 @@ const AgentDashboardPage = () => {
       setHiringRequests(getSavedRequests())
     }
 
+    const handleAgentsUpdated = () => refreshRecords()
+
     window.addEventListener('focus', refreshRecords)
     window.addEventListener('storage', refreshRecords)
+    window.addEventListener('mandateflow-agents-updated', handleAgentsUpdated)
+    window.addEventListener('mandateflow-requests-updated', refreshRecords)
 
     return () => {
       window.removeEventListener('focus', refreshRecords)
       window.removeEventListener('storage', refreshRecords)
+      window.removeEventListener('mandateflow-agents-updated', handleAgentsUpdated)
+      window.removeEventListener('mandateflow-requests-updated', refreshRecords)
     }
   }, [])
 
@@ -424,19 +430,15 @@ const AgentDashboardPage = () => {
     [hiringRequests, search],
   )
 
-  // Incoming requests must belong to agents registered by this workspace.
   const registeredAgentIds = useMemo(
-    () => new Set(
-      getSavedAgents().map((agent) => agent.id),
-    ),
+    () => new Set(agents.filter((agent) => agent.isRegistered).map((agent) => agent.id)),
     [agents],
   )
 
   const filteredIncomingRequests = useMemo(
     () =>
       hiringRequests.filter((request) => {
-        const belongsToRegisteredAgent =
-          registeredAgentIds.has(request.agentId)
+        const belongsToRegisteredAgent = registeredAgentIds.has(request.agentId)
 
         const matchesSearch =
           `${request.taskTitle} ${request.agentName} ${request.agentCategory} ${request.status}`
@@ -516,6 +518,7 @@ const AgentDashboardPage = () => {
       )
 
       localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedAgents))
+      window.dispatchEvent(new Event('mandateflow-agents-updated'))
     } catch (error) {
       console.error('Unable to update registered agent:', error)
     }
@@ -549,6 +552,7 @@ const AgentDashboardPage = () => {
       )
 
       setHiringRequests(updatedRequests)
+      window.dispatchEvent(new Event('mandateflow-requests-updated'))
     } catch (error) {
       console.error('Unable to update hiring request:', error)
     }
@@ -648,6 +652,9 @@ const AgentDashboardPage = () => {
                   <img
                     src={agent.image}
                     alt={agent.name}
+                    onError={(event) => {
+                      event.currentTarget.src = getCategoryDetails(agent.category).image
+                    }}
                     className="h-14 w-14 shrink-0 rounded-xl bg-[#E6F8F1] object-cover"
                   />
 
@@ -911,28 +918,31 @@ const AgentDashboardPage = () => {
           </motion.div>
         ))
       ) : (
-        <div className="rounded-2xl border border-[#E8EDE8] bg-white px-6 py-14 text-center">
-          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[#E6F8F1] text-[#00A87D]">
-            <FileText size={25} />
-          </div>
-          <h3 className="mt-4 text-lg font-bold text-[#101B1B]">
-            {search ? 'No matching requests' : 'No hiring requests yet'}
-          </h3>
-          <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-[#929D98]">
-            {search
-              ? 'Try searching with another task title, agent name, or status.'
-              : 'When you prepare a hiring request for an approved agent, it will appear here.'}
-          </p>
-          {!search && (
-            <Link
-              to="/explore"
-              className="mt-6 inline-flex items-center gap-2 rounded-xl bg-[#00A87D] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#008A66]"
-            >
-              Discover Agents
-              <ArrowRight size={17} />
-            </Link>
-          )}
-        </div>
+       <div className="flex w-full flex-col items-center rounded-2xl border border-[#E8EDE8] bg-white px-6 py-14 text-center">
+  <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[#E6F8F1] text-[#00A87D]">
+    <FileText size={25} />
+  </div>
+
+  <h3 className="mt-4 w-full text-center text-lg font-bold text-[#101B1B]">
+    {search ? 'No matching requests' : 'No hiring requests yet'}
+  </h3>
+
+  <p className="mt-2 w-full max-w-md text-center text-sm leading-6 text-[#929D98]">
+    {search
+      ? 'Try searching with another task title, agent name, or status.'
+      : 'When you prepare a hiring request for an approved agent, it will appear here.'}
+  </p>
+
+  {!search && (
+    <Link
+      to="/explore"
+      className="mt-6 inline-flex items-center gap-2 rounded-xl bg-[#00A87D] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#008A66]"
+    >
+      Discover Agents
+      <ArrowRight size={17} />
+    </Link>
+  )}
+</div>
       )}
     </div>
   )
@@ -1018,7 +1028,7 @@ const AgentDashboardPage = () => {
               </div>
             </div>
 
-            {request.status === 'Pending' ? (
+            {request.status.toLowerCase() === 'pending' ? (
               <>
                 <div className="mt-5 flex items-start gap-2 rounded-xl border border-amber-100 bg-amber-50 p-3">
                   <AlertCircle size={17} className="mt-0.5 shrink-0 text-amber-600" />
@@ -1056,14 +1066,14 @@ const AgentDashboardPage = () => {
             ) : (
               <div className="mt-5 rounded-xl bg-[#FAFAF6] p-4">
                 <p className="text-sm font-semibold text-[#101B1B]">
-                  {request.status === 'Accepted'
+                  {request.status.toLowerCase() === 'accepted'
                     ? 'You accepted this request.'
-                    : request.status === 'Rejected'
+                    : request.status.toLowerCase() === 'rejected'
                       ? 'You declined this request.'
                       : `Request status: ${request.status}`}
                 </p>
                 <p className="mt-1 text-xs leading-6 text-[#929D98]">
-                  {request.status === 'Accepted'
+                  {request.status.toLowerCase() === 'accepted'
                     ? 'Task execution and payment authorization are the next stages of the workflow.'
                     : 'This request has been responded to and can no longer be accepted from this screen.'}
                 </p>
@@ -1072,31 +1082,31 @@ const AgentDashboardPage = () => {
           </motion.div>
         ))
       ) : (
-        <div className="rounded-2xl border border-[#E8EDE8] bg-white px-6 py-14 text-center">
-          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[#E6F8F1] text-[#00A87D]">
-            <ClipboardList size={25} />
-          </div>
+       <div className="flex w-full flex-col items-center rounded-2xl border border-[#E8EDE8] bg-white px-6 py-14 text-center">
+  <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[#E6F8F1] text-[#00A87D]">
+    <ClipboardList size={25} />
+  </div>
 
-          <h3 className="mt-4 text-lg font-bold text-[#101B1B]">
-            {search ? 'No matching incoming requests' : 'No incoming requests yet'}
-          </h3>
+  <h3 className="mt-4 w-full text-center text-lg font-bold text-[#101B1B]">
+    {search ? 'No matching incoming requests' : 'No incoming requests yet'}
+  </h3>
 
-          <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-[#929D98]">
-            {search
-              ? 'Try another task title, agent name, or request status.'
-              : 'Requests submitted to your registered agents will appear here.'}
-          </p>
+  <p className="mt-2 w-full max-w-md text-center text-sm leading-6 text-[#929D98]">
+    {search
+      ? 'Try another task title, agent name, or request status.'
+      : 'Requests submitted to your registered agents will appear here.'}
+  </p>
 
-          {!search && (
-            <Link
-              to="/explore"
-              className="mt-6 inline-flex items-center gap-2 rounded-xl bg-[#00A87D] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#008A66]"
-            >
-              Discover Agents
-              <ArrowRight size={17} />
-            </Link>
-          )}
-        </div>
+  {!search && (
+    <Link
+      to="/explore"
+      className="mt-6 inline-flex items-center gap-2 rounded-xl bg-[#00A87D] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#008A66]"
+    >
+      Discover Agents
+      <ArrowRight size={17} />
+    </Link>
+  )}
+</div>
       )}
     </div>
   )
