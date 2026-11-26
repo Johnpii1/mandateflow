@@ -100,7 +100,7 @@ const Footer = () => {
             {/* X */}
             <motion.a
               whileHover={{ y: -4 }}
-              href="https://x.com"
+              href="https://github.com/Johnpii1/mandateflow"
               target="_blank"
               rel="noreferrer"
               aria-label="X"
