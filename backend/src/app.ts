@@ -4,7 +4,9 @@ import helmet from 'helmet';
 import mongoose from 'mongoose';
 import { env } from './config/env.js';
 import authRoutes from './modules/auth/auth.routes.js';
-import agentRoutes from './modules/agents/agent.routes.js';
+import agentRoutes, { ownedAgentsRouter } from './modules/agents/agent.routes.js';
+import marketplaceRoutes from './modules/marketplace/marketplace.routes.js';
+import mandateRoutes from './modules/mandates/mandate.routes.js';
 import { AppError } from './common/errors/AppError.js';
 
 const app = express();
@@ -16,6 +18,9 @@ app.use(express.json({ limit: '1mb' }));
 
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/agents', agentRoutes);
+app.use('/api/v1/users/me/agents', ownedAgentsRouter);
+app.use('/api/v1/marketplace', marketplaceRoutes);
+app.use('/api/v1/mandates', mandateRoutes);
 
 app.get('/health', (_request, response) => {
   const databaseConnected = mongoose.connection.readyState === 1;

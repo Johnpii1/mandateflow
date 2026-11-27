@@ -18,4 +18,21 @@ export const createAgentSchema = z.object({
   endpointUrl: z.url().max(2048).optional(),
 }).strict();
 
+export const updateAgentSchema = createAgentSchema.partial().refine(
+  (value) => Object.keys(value).length > 0,
+  'Provide at least one field to update',
+);
+
+export const agentIdSchema = z.string().uuid();
+
+export const agentStatusSchema = z.object({
+  status: z.enum(['active', 'suspended', 'archived']),
+}).strict();
+
+export const paginationSchema = z.object({
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(100).default(20),
+}).strict();
+
 export type CreateAgentInput = z.infer<typeof createAgentSchema>;
+export type UpdateAgentInput = z.infer<typeof updateAgentSchema>;

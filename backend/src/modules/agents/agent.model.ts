@@ -54,5 +54,7 @@ const agentSchema = new Schema<AgentRecord>(
 
 agentSchema.index({ ownerId: 1, createdAt: -1 });
 agentSchema.index({ status: 1, isDiscoverable: 1 });
+agentSchema.index({ status: 1, isDiscoverable: 1, category: 1 });
+agentSchema.index({ status: 1, isDiscoverable: 1, capabilities: 1 });
 
 export const Agent = model<AgentRecord>('Agent', agentSchema);
