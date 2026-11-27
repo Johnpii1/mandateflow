@@ -2,18 +2,22 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "motion/react";
-import { X, Wallet, ArrowRight, ShieldCheck } from "lucide-react";
+import {
+  X,
+  ArrowRight,
+  ShieldCheck,
+  LogIn,
+  UserPlus,
+} from "lucide-react";
 
 interface LaunchAppModalProps {
   isOpen: boolean;
   onClose: () => void;
-  destination?: string;
 }
 
 const LaunchAppModal = ({
   isOpen,
   onClose,
-  destination = "/explore",
 }: LaunchAppModalProps) => {
   const navigate = useNavigate();
 
@@ -35,9 +39,14 @@ const LaunchAppModal = ({
     };
   }, [isOpen, onClose]);
 
-  const handleContinue = () => {
+  const handleSignIn = () => {
     onClose();
-    navigate(destination);
+    navigate("/sign-in");
+  };
+
+  const handleSignUp = () => {
+    onClose();
+    navigate("/sign-up");
   };
 
   return (
@@ -100,7 +109,7 @@ const LaunchAppModal = ({
               transition={{ delay: 0.12, duration: 0.4 }}
               className="mb-7 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#E2F8EF] text-[#00A87D]"
             >
-              <Wallet size={27} strokeWidth={2.2} />
+              <UserPlus size={27} strokeWidth={2.2} />
             </motion.div>
 
             {/* HEADING */}
@@ -118,26 +127,27 @@ const LaunchAppModal = ({
                 id="launch-modal-title"
                 className="text-2xl font-extrabold tracking-tight text-[#101B1B] sm:text-3xl"
               >
-                Launch your agent economy.
+                Your agent economy starts here.
               </h2>
             </motion.div>
 
+            {/* DESCRIPTION */}
             <motion.p
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.24, duration: 0.4 }}
-              className="mb-8 text-sm font-medium leading-7 text-[#68766F]"
+              className="mb-7 text-sm font-medium leading-7 text-[#68766F]"
             >
-              Explore AI agents, discover services, hire agents and participate
-              in the agent economy.
+              Sign in to your account or create a new one to discover AI agents,
+              explore services, and participate in the MandateFlow ecosystem.
             </motion.p>
 
-            {/* ACCESS INFORMATION */}
+            {/* ACCOUNT INFORMATION */}
             <motion.div
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3, duration: 0.4 }}
-              className="mb-6 flex items-center gap-3 rounded-2xl border border-[#E1EBE5] bg-white p-4"
+              className="mb-7 flex items-center gap-3 rounded-2xl border border-[#E1EBE5] bg-white p-4"
             >
               <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#E7F8F0] text-[#00A87D]">
                 <ShieldCheck size={20} />
@@ -145,41 +155,65 @@ const LaunchAppModal = ({
 
               <div className="min-w-0 flex-1">
                 <p className="text-xs font-bold text-[#101B1B]">
-                  Welcome to MandateFlow
+                  Your account, your workspace
                 </p>
 
-                <p className="mt-1 text-[11px] font-medium text-[#829089]">
-                  Explore the agent economy and its opportunities.
+                <p className="mt-1 text-[11px] font-medium leading-5 text-[#829089]">
+                  Access MandateFlow with your personal account.
                 </p>
               </div>
 
               <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-[#00A87D]" />
             </motion.div>
 
-            {/* LAUNCH BUTTON */}
-            <motion.button
-              type="button"
-              onClick={handleContinue}
-              whileHover={{ scale: 1.02, y: -2 }}
-              whileTap={{ scale: 0.97 }}
+            {/* AUTHENTICATION OPTIONS */}
+            <motion.div
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.36, duration: 0.4 }}
-              className="flex w-full items-center justify-center gap-3 rounded-xl bg-[#00A87D] px-6 py-4 text-sm font-extrabold text-white shadow-[0_8px_24px_rgba(0,168,125,0.18)] transition-colors duration-300 hover:bg-[#008A66] hover:shadow-[0_12px_28px_rgba(0,168,125,0.25)]"
+              className="flex flex-col gap-3"
             >
-              Launch App
-              <ArrowRight size={18} />
-            </motion.button>
+              {/* SIGN IN */}
+              <motion.button
+                type="button"
+                onClick={handleSignIn}
+                whileHover={{ scale: 1.02, y: -2 }}
+                whileTap={{ scale: 0.97 }}
+                className="group flex w-full items-center justify-center gap-3 rounded-xl bg-[#00A87D] px-6 py-4 text-sm font-extrabold text-white shadow-[0_8px_24px_rgba(0,168,125,0.18)] transition-all duration-300 hover:bg-[#008A66] hover:shadow-[0_12px_28px_rgba(0,168,125,0.25)]"
+              >
+                <LogIn size={18} />
+                Sign In
+                <ArrowRight
+                  size={17}
+                  className="transition-transform duration-300 group-hover:translate-x-1"
+                />
+              </motion.button>
+
+              {/* SIGN UP */}
+              <motion.button
+                type="button"
+                onClick={handleSignUp}
+                whileHover={{ scale: 1.02, y: -2 }}
+                whileTap={{ scale: 0.97 }}
+                className="group flex w-full items-center justify-center gap-3 rounded-xl border border-[#DCE9E1] bg-white px-6 py-4 text-sm font-extrabold text-[#101B1B] transition-all duration-300 hover:border-[#00A87D]/50 hover:bg-[#EAF9F2] hover:text-[#008A66]"
+              >
+                <UserPlus size={18} />
+                Create an Account
+                <ArrowRight
+                  size={17}
+                  className="transition-transform duration-300 group-hover:translate-x-1"
+                />
+              </motion.button>
+            </motion.div>
 
             {/* FOOTNOTE */}
             <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.42, duration: 0.4 }}
-              className="mt-5 text-center text-[10px] font-medium leading-5 text-[#91A098]"
+              className="mt-6 text-center text-[10px] font-medium leading-5 text-[#91A098]"
             >
-              Wallet connection and transaction approvals can be integrated
-              when wallet functionality is ready.
+              Join MandateFlow and discover a smarter way to work with AI agents.
             </motion.p>
           </motion.div>
         </motion.div>
