@@ -194,12 +194,6 @@ const Navbar = () => {
     setLaunchModalOpen(true);
   };
 
-  // Navigate to Dashboard
-  const openDashboard = () => {
-    closeMenu();
-    navigate("/dashboard");
-  };
-
   const desktopLinkClass = (href: string) =>
     `rounded-xl border px-4 py-2 text-[13px] font-semibold transition-all duration-300 ${
       isActive(href)
@@ -266,36 +260,19 @@ const Navbar = () => {
             ))}
           </div>
 
-          {/* DESKTOP DASHBOARD + LAUNCH BUTTON */}
-          <div className="hidden items-center gap-3 lg:flex">
-            <motion.button
-              type="button"
-              onClick={openDashboard}
-              whileHover={{ y: -2, scale: 1.02 }}
-              whileTap={{ scale: 0.97 }}
-              className={`flex items-center gap-2 rounded-lg border px-4 py-2.5 text-xs font-bold transition-all duration-300 ${
-                location.pathname === "/dashboard"
-                  ? "border-[#00A87D]/40 bg-[#E6F8F1] text-[#008A66]"
-                  : "border-[#DCE9E2] bg-white text-[#263B33] hover:border-[#00A87D]/40 hover:bg-[#E6F8F1] hover:text-[#008A66]"
-              }`}
-            >
-              Dashboard
-              <ArrowUpRight size={15} />
-            </motion.button>
-
+          {/* DESKTOP LAUNCH BUTTON */}
+          <div className="hidden items-center lg:flex">
             <motion.button
               type="button"
               onClick={launchApp}
-              whileHover={{ y: -2, scale: 1.02 }}
+              whileHover={{ y: -2, scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
-              className="group relative flex items-center gap-2 overflow-hidden rounded-lg bg-[#00A87D] px-4 py-2.5 text-xs font-bold text-white shadow-[0_4px_12px_rgba(0,168,125,0.14)] transition-all duration-300 hover:bg-[#008A66] hover:shadow-[0_6px_18px_rgba(0,168,125,0.22)]"
+              className="group relative flex items-center gap-2 overflow-hidden rounded-xl bg-[#00A87D] px-5 py-3 text-xs font-bold text-white shadow-[0_4px_12px_rgba(0,168,125,0.14)] transition-all duration-300 hover:bg-[#008A66] hover:shadow-[0_6px_18px_rgba(0,168,125,0.22)]"
             >
-              <span className="relative z-10">
-                Launch App
-              </span>
+              <span className="relative z-10">Launch App</span>
 
               <ArrowUpRight
-                size={15}
+                size={16}
                 className="relative z-10 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
               />
 
@@ -413,30 +390,17 @@ const Navbar = () => {
                   ))}
                 </motion.div>
 
-                {/* MOBILE DASHBOARD + LAUNCH BUTTON */}
+                {/* MOBILE LAUNCH BUTTON */}
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.25 }}
-                  className="mt-5 flex flex-col gap-3"
+                  className="mt-5"
                 >
                   <button
                     type="button"
-                    onClick={openDashboard}
-                    className={`flex w-full items-center justify-center gap-2 rounded-xl border px-5 py-3 text-sm font-bold transition-all ${
-                      location.pathname === "/dashboard"
-                        ? "border-[#00A87D]/40 bg-[#E6F8F1] text-[#008A66]"
-                        : "border-[#DCE9E2] bg-white text-[#263B33] hover:border-[#00A87D]/40 hover:bg-[#E6F8F1] hover:text-[#008A66]"
-                    }`}
-                  >
-                    Dashboard
-                    <ArrowUpRight size={17} />
-                  </button>
-
-                  <button
-                    type="button"
                     onClick={launchApp}
-                    className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#00A87D] px-5 py-3 text-sm font-bold text-white shadow-lg shadow-[#00A87D]/15 transition-colors hover:bg-[#008A66]"
+                    className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#00A87D] px-5 py-3.5 text-sm font-bold text-white shadow-lg shadow-[#00A87D]/15 transition-all hover:bg-[#008A66] active:scale-[0.98]"
                   >
                     Launch App
                     <ArrowUpRight size={17} />
@@ -444,7 +408,7 @@ const Navbar = () => {
                 </motion.div>
 
                 <p className="mt-5 text-center text-[11px] font-medium tracking-wide text-[#929D98]">
-                  Autonomous agents. Seamless payments.
+                  Intelligent agents. Seamless collaboration.
                 </p>
               </div>
             </motion.div>
