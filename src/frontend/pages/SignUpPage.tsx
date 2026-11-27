@@ -1,6 +1,6 @@
 
-import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useState, type ChangeEvent, type FormEvent } from 'react'
+import { Link } from 'react-router-dom'
 import { motion } from 'motion/react'
 import {
   ArrowLeft,
@@ -16,8 +16,6 @@ import { toast } from 'sonner'
 import Mandateflow from '../../assets/images/logomd.png'
 
 const SignUpPage = () => {
-  const navigate = useNavigate()
-
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -29,14 +27,16 @@ const SignUpPage = () => {
     confirmPassword: '',
   })
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    })
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target
+
+    setFormData((previous) => ({
+      ...previous,
+      [name]: value,
+    }))
   }
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
     if (
@@ -62,7 +62,7 @@ const SignUpPage = () => {
     setLoading(true)
 
     try {
-      // Connect your registration API here.
+      // Registration API will be connected here.
       toast.info('Account registration is not connected yet')
     } catch {
       toast.error('Unable to create your account. Please try again.')
@@ -72,11 +72,11 @@ const SignUpPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#FAFAF6] flex items-center justify-center px-4 py-10">
+    <div className="flex min-h-screen items-center justify-center bg-[#FAFAF6] px-4 py-10">
       <div className="w-full max-w-md">
         <Link
           to="/"
-          className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-[#00A87D] transition-colors mb-8"
+          className="mb-8 inline-flex items-center gap-2 text-sm text-gray-500 transition-colors hover:text-[#00A87D]"
         >
           <ArrowLeft size={16} />
           Back to home
@@ -86,9 +86,9 @@ const SignUpPage = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="bg-white border border-[#E8EDE8] rounded-3xl p-7 sm:p-9 shadow-sm"
+          className="rounded-3xl border border-[#E8EDE8] bg-white p-7 shadow-sm sm:p-9"
         >
-          <div className="flex justify-center mb-7">
+          <div className="mb-7 flex justify-center">
             <Link to="/">
               <img
                 src={Mandateflow}
@@ -98,7 +98,7 @@ const SignUpPage = () => {
             </Link>
           </div>
 
-          <div className="text-center mb-8">
+          <div className="mb-8 text-center">
             <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#E6F8F1] text-[#00A87D]">
               <User size={25} />
             </div>
@@ -116,7 +116,7 @@ const SignUpPage = () => {
             <div>
               <label
                 htmlFor="fullName"
-                className="block text-sm font-semibold text-gray-700 mb-2"
+                className="mb-2 block text-sm font-semibold text-gray-700"
               >
                 Full name
               </label>
@@ -144,7 +144,7 @@ const SignUpPage = () => {
             <div>
               <label
                 htmlFor="email"
-                className="block text-sm font-semibold text-gray-700 mb-2"
+                className="mb-2 block text-sm font-semibold text-gray-700"
               >
                 Email address
               </label>
@@ -172,7 +172,7 @@ const SignUpPage = () => {
             <div>
               <label
                 htmlFor="password"
-                className="block text-sm font-semibold text-gray-700 mb-2"
+                className="mb-2 block text-sm font-semibold text-gray-700"
               >
                 Password
               </label>
@@ -198,7 +198,7 @@ const SignUpPage = () => {
 
                 <button
                   type="button"
-                  onClick={() => setShowPassword(!showPassword)}
+                  onClick={() => setShowPassword((previous) => !previous)}
                   className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700"
                   aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
@@ -210,7 +210,7 @@ const SignUpPage = () => {
             <div>
               <label
                 htmlFor="confirmPassword"
-                className="block text-sm font-semibold text-gray-700 mb-2"
+                className="mb-2 block text-sm font-semibold text-gray-700"
               >
                 Confirm password
               </label>
@@ -235,11 +235,19 @@ const SignUpPage = () => {
 
                 <button
                   type="button"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  onClick={() =>
+                    setShowConfirmPassword((previous) => !previous)
+                  }
                   className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700"
-                  aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
+                  aria-label={
+                    showConfirmPassword ? 'Hide password' : 'Show password'
+                  }
                 >
-                  {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  {showConfirmPassword ? (
+                    <EyeOff size={18} />
+                  ) : (
+                    <Eye size={18} />
+                  )}
                 </button>
               </div>
             </div>
@@ -250,6 +258,7 @@ const SignUpPage = () => {
               className="group mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-[#00A87D] py-3.5 text-sm font-semibold text-white transition hover:bg-[#008A66] disabled:cursor-not-allowed disabled:opacity-60"
             >
               {loading ? 'Creating account...' : 'Create Account'}
+
               {!loading && (
                 <ArrowRight
                   size={17}
@@ -263,6 +272,7 @@ const SignUpPage = () => {
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-[#E8EDE8]" />
             </div>
+
             <div className="relative flex justify-center">
               <span className="bg-white px-4 text-xs text-gray-400">
                 ALREADY HAVE AN ACCOUNT?

@@ -1,14 +1,20 @@
 
-import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useState, type ChangeEvent, type FormEvent } from 'react'
+import { Link } from 'react-router-dom'
 import { motion } from 'motion/react'
-import { ArrowLeft, ArrowRight, Eye, EyeOff, LockKeyhole, Mail, ShieldCheck } from 'lucide-react'
+import {
+  ArrowLeft,
+  ArrowRight,
+  Eye,
+  EyeOff,
+  LockKeyhole,
+  Mail,
+  ShieldCheck,
+} from 'lucide-react'
 import { toast } from 'sonner'
 import Mandateflow from '../../assets/images/logomd.png'
 
 const SignInPage = () => {
-  const navigate = useNavigate()
-
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
 
@@ -17,14 +23,16 @@ const SignInPage = () => {
     password: '',
   })
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    })
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target
+
+    setFormData((previous) => ({
+      ...previous,
+      [name]: value,
+    }))
   }
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
     if (!formData.email.trim() || !formData.password) {
@@ -35,7 +43,7 @@ const SignInPage = () => {
     setLoading(true)
 
     try {
-      // Connect your authentication API here.
+      // Authentication API will be connected here.
       toast.info('Authentication is not connected yet')
     } catch {
       toast.error('Unable to sign in. Please try again.')
@@ -45,11 +53,11 @@ const SignInPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#FAFAF6] flex items-center justify-center px-4 py-10">
+    <div className="flex min-h-screen items-center justify-center bg-[#FAFAF6] px-4 py-10">
       <div className="w-full max-w-md">
         <Link
           to="/"
-          className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-[#00A87D] transition-colors mb-8"
+          className="mb-8 inline-flex items-center gap-2 text-sm text-gray-500 transition-colors hover:text-[#00A87D]"
         >
           <ArrowLeft size={16} />
           Back to home
@@ -59,9 +67,9 @@ const SignInPage = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="bg-white border border-[#E8EDE8] rounded-3xl p-7 sm:p-9 shadow-sm"
+          className="rounded-3xl border border-[#E8EDE8] bg-white p-7 shadow-sm sm:p-9"
         >
-          <div className="flex justify-center mb-7">
+          <div className="mb-7 flex justify-center">
             <Link to="/">
               <img
                 src={Mandateflow}
@@ -71,7 +79,7 @@ const SignInPage = () => {
             </Link>
           </div>
 
-          <div className="text-center mb-8">
+          <div className="mb-8 text-center">
             <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#E6F8F1] text-[#00A87D]">
               <LockKeyhole size={25} />
             </div>
@@ -89,7 +97,7 @@ const SignInPage = () => {
             <div>
               <label
                 htmlFor="email"
-                className="block text-sm font-semibold text-gray-700 mb-2"
+                className="mb-2 block text-sm font-semibold text-gray-700"
               >
                 Email address
               </label>
@@ -115,7 +123,7 @@ const SignInPage = () => {
             </div>
 
             <div>
-              <div className="flex items-center justify-between mb-2">
+              <div className="mb-2 flex items-center justify-between">
                 <label
                   htmlFor="password"
                   className="text-sm font-semibold text-gray-700"
@@ -125,7 +133,11 @@ const SignInPage = () => {
 
                 <button
                   type="button"
-                  onClick={() => toast.info('Password recovery will be available once authentication is connected.')}
+                  onClick={() =>
+                    toast.info(
+                      'Password recovery will be available once authentication is connected.'
+                    )
+                  }
                   className="text-xs font-semibold text-[#00A87D] hover:text-[#008A66]"
                 >
                   Forgot password?
@@ -152,7 +164,7 @@ const SignInPage = () => {
 
                 <button
                   type="button"
-                  onClick={() => setShowPassword(!showPassword)}
+                  onClick={() => setShowPassword((previous) => !previous)}
                   className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700"
                   aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
@@ -167,6 +179,7 @@ const SignInPage = () => {
               className="group flex w-full items-center justify-center gap-2 rounded-xl bg-[#00A87D] py-3.5 text-sm font-semibold text-white transition hover:bg-[#008A66] disabled:cursor-not-allowed disabled:opacity-60"
             >
               {loading ? 'Signing in...' : 'Sign In'}
+
               {!loading && (
                 <ArrowRight
                   size={17}
@@ -180,6 +193,7 @@ const SignInPage = () => {
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-[#E8EDE8]" />
             </div>
+
             <div className="relative flex justify-center">
               <span className="bg-white px-4 text-xs text-gray-400">
                 NEW TO MANDATEFLOW?
