@@ -34,7 +34,7 @@ const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState("");
-  const [launchModalOpen, setLaunchModalOpen] = useState(false);
+  const [signInModalOpen, setSignInModalOpen] = useState(false);
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -188,10 +188,10 @@ const Navbar = () => {
     return location.pathname === href;
   };
 
-  // Open Launch App modal
-  const launchApp = () => {
+  // Open Sign In modal
+  const openSignIn = () => {
     closeMenu();
-    setLaunchModalOpen(true);
+    setSignInModalOpen(true);
   };
 
   const desktopLinkClass = (href: string) =>
@@ -260,16 +260,16 @@ const Navbar = () => {
             ))}
           </div>
 
-          {/* DESKTOP LAUNCH BUTTON */}
+          {/* DESKTOP SIGN IN BUTTON */}
           <div className="hidden items-center lg:flex">
             <motion.button
               type="button"
-              onClick={launchApp}
+              onClick={openSignIn}
               whileHover={{ y: -2, scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
               className="group relative flex items-center gap-2 overflow-hidden rounded-xl bg-[#00A87D] px-5 py-3 text-xs font-bold text-white shadow-[0_4px_12px_rgba(0,168,125,0.14)] transition-all duration-300 hover:bg-[#008A66] hover:shadow-[0_6px_18px_rgba(0,168,125,0.22)]"
             >
-              <span className="relative z-10">Launch App</span>
+              <span className="relative z-10">Sign In</span>
 
               <ArrowUpRight
                 size={16}
@@ -390,7 +390,7 @@ const Navbar = () => {
                   ))}
                 </motion.div>
 
-                {/* MOBILE LAUNCH BUTTON */}
+                {/* MOBILE SIGN IN BUTTON */}
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -399,10 +399,10 @@ const Navbar = () => {
                 >
                   <button
                     type="button"
-                    onClick={launchApp}
+                    onClick={openSignIn}
                     className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#00A87D] px-5 py-3.5 text-sm font-bold text-white shadow-lg shadow-[#00A87D]/15 transition-all hover:bg-[#008A66] active:scale-[0.98]"
                   >
-                    Launch App
+                    Sign In
                     <ArrowUpRight size={17} />
                   </button>
                 </motion.div>
@@ -416,11 +416,10 @@ const Navbar = () => {
         )}
       </AnimatePresence>
 
-      {/* LAUNCH APP MODAL */}
+      {/* SIGN IN / SIGN UP MODAL */}
       <LaunchAppModal
-        isOpen={launchModalOpen}
-        onClose={() => setLaunchModalOpen(false)}
-        destination="/explore"
+        isOpen={signInModalOpen}
+        onClose={() => setSignInModalOpen(false)}
       />
     </>
   );

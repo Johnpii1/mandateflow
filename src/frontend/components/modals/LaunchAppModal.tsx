@@ -13,13 +13,11 @@ import {
 interface LaunchAppModalProps {
   isOpen: boolean;
   onClose: () => void;
-  destination?: string;
 }
 
 const LaunchAppModal = ({
   isOpen,
   onClose,
-  destination = "/explore",
 }: LaunchAppModalProps) => {
   const navigate = useNavigate();
 
@@ -133,6 +131,7 @@ const LaunchAppModal = ({
               </h2>
             </motion.div>
 
+            {/* DESCRIPTION */}
             <motion.p
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
