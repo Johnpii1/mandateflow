@@ -1,6 +1,6 @@
 
 import { useState, type ChangeEvent, type FormEvent } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { motion } from 'motion/react'
 import {
   ArrowLeft,
@@ -9,20 +9,24 @@ import {
   EyeOff,
   LockKeyhole,
   User,
+  Mail,
   ShieldCheck,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import Mandateflow from '../../assets/images/logomd.png'
+import { ApiError } from '../services/api'
+import { useAuth } from '../auth/AuthContext'
 
 const SignUpPage = () => {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [loading, setLoading] = useState(false)
+  const { register } = useAuth()
+  const navigate = useNavigate()
 
   const [formData, setFormData] = useState({
     fullName: '',
-    username: '',
-    // email: '',
+    email: '',
     password: '',
     confirmPassword: '',
   })
@@ -41,7 +45,7 @@ const SignUpPage = () => {
 
     if (
       !formData.fullName.trim() ||
-      !formData.username.trim() ||
+      !formData.email.trim() ||
       !formData.password ||
       !formData.confirmPassword
     ) {
@@ -49,15 +53,8 @@ const SignUpPage = () => {
       return
     }
 
-    if (!/^[a-zA-Z0-9_]{3,20}$/.test(formData.username)) {
-      toast.error(
-        'Username must be 3–20 characters and contain only letters, numbers, or underscores'
-      )
-      return
-    }
-
-    if (formData.password.length < 8) {
-      toast.error('Password must be at least 8 characters')
+    if (formData.password.length < 10 || formData.password.length > 128) {
+      toast.error('Password must be between 10 and 128 characters')
       return
     }
 
@@ -69,11 +66,11 @@ const SignUpPage = () => {
     setLoading(true)
 
     try {
-      // Registration API will be connected here.
-      // Send fullName, username, and password to the backend.
-      toast.info('Account registration is not connected yet')
-    } catch {
-      toast.error('Unable to create your account. Please try again.')
+      await register(formData.email.trim().toLowerCase(), formData.password, formData.fullName.trim())
+      toast.success('Account created. You are signed in.')
+      navigate('/dashboard')
+    } catch (error) {
+      toast.error(error instanceof ApiError ? error.message : 'Unable to create your account. Please try again.')
     } finally {
       setLoading(false)
     }
@@ -151,42 +148,6 @@ const SignUpPage = () => {
 
             <div>
               <label
-                htmlFor="username"
-                className="mb-1.5 block text-xs font-semibold text-gray-700"
-              >
-                Username
-              </label>
-
-              <div className="relative">
-                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm font-semibold text-gray-400">
-                  @
-                </span>
-
-                <input
-                  id="username"
-                  name="username"
-                  type="text"
-                  autoComplete="username"
-                  placeholder="Choose a username"
-                  value={formData.username}
-                  onChange={handleChange}
-                  required
-                  minLength={3}
-                  maxLength={20}
-                  className="w-full rounded-xl border border-[#E8EDE8] bg-white py-3 pl-10 pr-3 text-sm text-gray-900 outline-none transition focus:border-[#00A87D] focus:ring-2 focus:ring-[#00A87D]/10"
-                />
-              </div>
-
-              <p className="mt-1 text-[10px] text-gray-400">
-                3–20 characters. Letters, numbers, and underscores only.
-              </p>
-            </div>
-
-            {/* Email field temporarily disabled */}
-
-            {/*
-            <div>
-              <label
                 htmlFor="email"
                 className="mb-1.5 block text-xs font-semibold text-gray-700"
               >
@@ -208,11 +169,11 @@ const SignUpPage = () => {
                   value={formData.email}
                   onChange={handleChange}
                   required
+                  maxLength={254}
                   className="w-full rounded-xl border border-[#E8EDE8] bg-white py-3 pl-10 pr-3 text-sm text-gray-900 outline-none transition focus:border-[#00A87D] focus:ring-2 focus:ring-[#00A87D]/10"
                 />
               </div>
             </div>
-            */}
 
             <div>
               <label
@@ -233,11 +194,12 @@ const SignUpPage = () => {
                   name="password"
                   type={showPassword ? 'text' : 'password'}
                   autoComplete="new-password"
-                  placeholder="Minimum 8 characters"
+                  placeholder="Minimum 10 characters"
                   value={formData.password}
                   onChange={handleChange}
                   required
-                  minLength={8}
+                  minLength={10}
+                  maxLength={128}
                   className="w-full rounded-xl border border-[#E8EDE8] bg-white py-3 pl-10 pr-11 text-sm text-gray-900 outline-none transition focus:border-[#00A87D] focus:ring-2 focus:ring-[#00A87D]/10"
                 />
 

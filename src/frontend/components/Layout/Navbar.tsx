@@ -4,8 +4,9 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "motion/react";
 import Mandateflow from "../../../assets/images/logomd.png";
 import { toast } from "sonner";
-import { ArrowUpRight, Menu, X, Sparkles } from "lucide-react";
+import { ArrowUpRight, Menu, X, Sparkles, LogIn, LogOut } from "lucide-react";
 import LaunchAppModal from "../modals/LaunchAppModal";
+import { useAuth } from "../../auth/AuthContext";
 
 const navLinks = [
   {
@@ -35,6 +36,8 @@ const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState("");
   const [authModalOpen, setAuthModalOpen] = useState(false);
+  const [authInitialView, setAuthInitialView] = useState<"signin" | "signup">("signup");
+  const { user, status, logout } = useAuth();
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -49,10 +52,6 @@ const Navbar = () => {
 
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
-  useEffect(() => {
-    setMenuOpen(false);
-  }, [location.pathname, location.hash]);
 
   useEffect(() => {
     if (location.pathname !== "/" || !location.hash) return;
@@ -77,7 +76,6 @@ const Navbar = () => {
 
   useEffect(() => {
     if (location.pathname !== "/") {
-      setActiveSection("");
       return;
     }
 
@@ -183,7 +181,24 @@ const Navbar = () => {
 
   const openSignUp = () => {
     closeMenu();
+    setAuthInitialView("signup");
     setAuthModalOpen(true);
+  };
+
+  const openSignIn = () => {
+    closeMenu();
+    setAuthInitialView("signin");
+    setAuthModalOpen(true);
+  };
+
+  const handleSignOut = async () => {
+    try {
+      await logout();
+      toast.success("You are signed out.");
+      navigate("/");
+    } catch {
+      toast.error("Could not contact the server. Your local session has been cleared.");
+    }
   };
 
   const desktopLinkClass = (href: string) =>
@@ -249,29 +264,54 @@ const Navbar = () => {
             ))}
           </div>
 
-          {/* DESKTOP SIGN UP BUTTON */}
-          <div className="hidden items-center lg:flex">
-            <motion.button
-              type="button"
-              onClick={openSignUp}
-              whileHover={{ y: -2, scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
-              className="group relative flex items-center gap-2 overflow-hidden font-bold rounded-xl bg-[#00A87D] px-5 py-3 text-xs font-bold text-white shadow-[0_4px_12px_rgba(0,168,125,0.14)] transition-all duration-300 hover:bg-[#008A66] hover:shadow-[0_6px_18px_rgba(0,168,125,0.22)]"
-            >
-              <span className="relative z-10">Sign Up</span>
-
-              <ArrowUpRight
-                size={16}
-                className="relative z-10 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
-              />
-
-              <motion.span
-                initial={{ x: "-100%" }}
-                whileHover={{ x: "100%" }}
-                transition={{ duration: 0.6 }}
-                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
-              />
-            </motion.button>
+          {/* DESKTOP ACCOUNT ACTIONS */}
+          <div className="hidden items-center gap-2 lg:flex">
+            {status === "authenticated" ? (
+              <>
+                <button
+                  type="button"
+                  onClick={() => navigate("/dashboard")}
+                  className="rounded-xl border border-[#00A87D]/25 px-4 py-3 text-xs font-bold text-[#008A66] transition hover:bg-[#E6F8F1]"
+                >
+                  {user?.displayName || "Dashboard"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => void handleSignOut()}
+                  className="flex items-center gap-2 rounded-xl px-3 py-3 text-xs font-semibold text-[#586461] transition hover:bg-[#E6F8F1] hover:text-[#008A66]"
+                >
+                  <LogOut size={15} /> Sign out
+                </button>
+              </>
+            ) : status === "loading" ? (
+              <span className="px-4 py-3 text-xs font-semibold text-[#929D98]">Checking session…</span>
+            ) : (
+              <>
+                <button
+                  type="button"
+                  onClick={openSignIn}
+                  className="flex items-center gap-2 rounded-xl px-4 py-3 text-xs font-bold text-[#586461] transition hover:bg-[#E6F8F1] hover:text-[#008A66]"
+                >
+                  <LogIn size={15} /> Sign In
+                </button>
+                <motion.button
+                  type="button"
+                  onClick={openSignUp}
+                  whileHover={{ y: -2, scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
+                  className="group relative flex items-center gap-2 overflow-hidden rounded-xl bg-[#00A87D] px-5 py-3 text-xs font-bold text-white shadow-[0_4px_12px_rgba(0,168,125,0.14)] transition-all duration-300 hover:bg-[#008A66] hover:shadow-[0_6px_18px_rgba(0,168,125,0.22)]"
+                >
+                  <span className="relative z-10">Sign Up</span>
+                  <ArrowUpRight size={16} className="relative z-10 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                  <motion.span
+                    initial={{ x: "-100%" }}
+                    whileHover={{ x: "100%" }}
+                    transition={{ duration: 0.6 }}
+                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
+                  />
+                </motion.button>
+              </>
+            )}
           </div>
 
           <motion.button
@@ -377,21 +417,50 @@ const Navbar = () => {
                   ))}
                 </motion.div>
 
-                {/* MOBILE SIGN UP BUTTON */}
+                {/* MOBILE ACCOUNT ACTIONS */}
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.25 }}
-                  className="mt-5"
+                  className="mt-5 flex flex-col gap-2"
                 >
-                  <button
-                    type="button"
-                    onClick={openSignUp}
-                    className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#00A87D] px-5 py-3.5 text-sm font-bold text-white shadow-lg font-bold shadow-[#00A87D]/15 transition-all hover:bg-[#008A66] active:scale-[0.98]"
-                  >
-                    Sign Up
-                    <ArrowUpRight size={17} />
-                  </button>
+                  {status === "authenticated" ? (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => { closeMenu(); navigate("/dashboard"); }}
+                        className="flex w-full items-center justify-center rounded-xl border border-[#00A87D]/25 px-5 py-3.5 text-sm font-bold text-[#008A66]"
+                      >
+                        {user?.displayName || "Dashboard"}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => void handleSignOut()}
+                        className="flex w-full items-center justify-center gap-2 rounded-xl px-5 py-3.5 text-sm font-semibold text-[#586461] hover:bg-[#E6F8F1]"
+                      >
+                        <LogOut size={17} /> Sign out
+                      </button>
+                    </>
+                  ) : status === "loading" ? (
+                    <p className="py-3 text-center text-sm text-[#929D98]">Checking session…</p>
+                  ) : (
+                    <>
+                      <button
+                        type="button"
+                        onClick={openSignIn}
+                        className="flex w-full items-center justify-center gap-2 rounded-xl border border-[#E8EDE8] px-5 py-3.5 text-sm font-bold text-[#586461]"
+                      >
+                        <LogIn size={17} /> Sign In
+                      </button>
+                      <button
+                        type="button"
+                        onClick={openSignUp}
+                        className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#00A87D] px-5 py-3.5 text-sm font-bold text-white shadow-lg shadow-[#00A87D]/15 transition-all hover:bg-[#008A66] active:scale-[0.98]"
+                      >
+                        Sign Up <ArrowUpRight size={17} />
+                      </button>
+                    </>
+                  )}
                 </motion.div>
 
                 <p className="mt-5 text-center text-[11px] font-medium tracking-wide text-[#929D98]">
@@ -404,9 +473,10 @@ const Navbar = () => {
       </AnimatePresence>
 
       <LaunchAppModal
+        key={`${authInitialView}-${authModalOpen}`}
         isOpen={authModalOpen}
         onClose={() => setAuthModalOpen(false)}
-        initialView="signup"
+        initialView={authInitialView}
       />
     </>
   );
