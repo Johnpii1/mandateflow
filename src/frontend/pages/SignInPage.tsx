@@ -8,7 +8,7 @@ import {
   Eye,
   EyeOff,
   LockKeyhole,
-  Mail,
+  User,
   ShieldCheck,
 } from 'lucide-react'
 import { toast } from 'sonner'
@@ -19,7 +19,7 @@ const SignInPage = () => {
   const [loading, setLoading] = useState(false)
 
   const [formData, setFormData] = useState({
-    email: '',
+    username: '',
     password: '',
   })
 
@@ -35,7 +35,7 @@ const SignInPage = () => {
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
-    if (!formData.email.trim() || !formData.password) {
+    if (!formData.username.trim() || !formData.password) {
       toast.error('Please fill in all fields')
       return
     }
@@ -44,6 +44,7 @@ const SignInPage = () => {
 
     try {
       // Authentication API will be connected here.
+      // Send username and password to the backend.
       toast.info('Authentication is not connected yet')
     } catch {
       toast.error('Unable to sign in. Please try again.')
@@ -53,11 +54,11 @@ const SignInPage = () => {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#FAFAF6] px-4 py-10">
-      <div className="w-full max-w-md">
+    <div className="flex min-h-screen items-center justify-center bg-[#FAFAF6] px-4 py-6">
+      <div className="w-full max-w-sm">
         <Link
           to="/"
-          className="mb-8 inline-flex items-center gap-2 text-sm text-gray-500 transition-colors hover:text-[#00A87D]"
+          className="mb-4 inline-flex items-center gap-2 text-sm text-gray-500 transition-colors hover:text-[#00A87D]"
         >
           <ArrowLeft size={16} />
           Back to home
@@ -67,66 +68,66 @@ const SignInPage = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="rounded-3xl border border-[#E8EDE8] bg-white p-7 shadow-sm sm:p-9"
+          className="rounded-3xl border border-[#E8EDE8] bg-white p-5 shadow-sm sm:p-6"
         >
-          <div className="mb-7 flex justify-center">
+          <div className="mb-4 flex justify-center">
             <Link to="/">
               <img
                 src={Mandateflow}
                 alt="MandateFlow"
-                className="h-12 w-auto object-contain"
+                className="h-9 w-auto object-contain"
               />
             </Link>
           </div>
 
-          <div className="mb-8 text-center">
-            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#E6F8F1] text-[#00A87D]">
-              <LockKeyhole size={25} />
+          <div className="mb-5 text-center">
+            <div className="mx-auto mb-3 flex h-11 w-11 items-center justify-center rounded-xl bg-[#E6F8F1] text-[#00A87D]">
+              <LockKeyhole size={21} />
             </div>
 
-            <h1 className="text-2xl font-bold text-[#111827]">
+            <h1 className="text-xl font-bold text-[#111827]">
               Welcome back
             </h1>
 
-            <p className="mt-2 text-sm text-gray-500">
+            <p className="mt-1.5 text-xs text-gray-500">
               Sign in to continue to your MandateFlow account.
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-3">
             <div>
               <label
-                htmlFor="email"
-                className="mb-2 block text-sm font-semibold text-gray-700"
+                htmlFor="username"
+                className="mb-1.5 block text-xs font-semibold text-gray-700"
               >
-                Email address
+                Username
               </label>
 
               <div className="relative">
-                <Mail
-                  size={18}
-                  className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+                <User
+                  size={17}
+                  className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"
                 />
 
                 <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  placeholder="you@example.com"
-                  value={formData.email}
+                  id="username"
+                  name="username"
+                  type="text"
+                  autoComplete="username"
+                  placeholder="Enter your username"
+                  value={formData.username}
                   onChange={handleChange}
                   required
-                  className="w-full rounded-xl border border-[#E8EDE8] bg-white py-3.5 pl-11 pr-4 text-sm text-gray-900 outline-none transition focus:border-[#00A87D] focus:ring-2 focus:ring-[#00A87D]/10"
+                  className="w-full rounded-xl border border-[#E8EDE8] bg-white py-3 pl-10 pr-3 text-sm text-gray-900 outline-none transition focus:border-[#00A87D] focus:ring-2 focus:ring-[#00A87D]/10"
                 />
               </div>
             </div>
 
             <div>
-              <div className="mb-2 flex items-center justify-between">
+              <div className="mb-1.5 flex items-center justify-between">
                 <label
                   htmlFor="password"
-                  className="text-sm font-semibold text-gray-700"
+                  className="text-xs font-semibold text-gray-700"
                 >
                   Password
                 </label>
@@ -146,8 +147,8 @@ const SignInPage = () => {
 
               <div className="relative">
                 <LockKeyhole
-                  size={18}
-                  className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+                  size={17}
+                  className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"
                 />
 
                 <input
@@ -159,16 +160,16 @@ const SignInPage = () => {
                   value={formData.password}
                   onChange={handleChange}
                   required
-                  className="w-full rounded-xl border border-[#E8EDE8] bg-white py-3.5 pl-11 pr-12 text-sm text-gray-900 outline-none transition focus:border-[#00A87D] focus:ring-2 focus:ring-[#00A87D]/10"
+                  className="w-full rounded-xl border border-[#E8EDE8] bg-white py-3 pl-10 pr-11 text-sm text-gray-900 outline-none transition focus:border-[#00A87D] focus:ring-2 focus:ring-[#00A87D]/10"
                 />
 
                 <button
                   type="button"
                   onClick={() => setShowPassword((previous) => !previous)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700"
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700"
                   aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
                 </button>
               </div>
             </div>
@@ -176,7 +177,7 @@ const SignInPage = () => {
             <button
               type="submit"
               disabled={loading}
-              className="group flex w-full items-center justify-center gap-2 rounded-xl bg-[#00A87D] py-3.5 text-sm font-semibold text-white transition hover:bg-[#008A66] disabled:cursor-not-allowed disabled:opacity-60"
+              className="group flex w-full items-center justify-center gap-2 rounded-xl bg-[#00A87D] py-3 text-sm font-semibold text-white transition hover:bg-[#008A66] disabled:cursor-not-allowed disabled:opacity-60"
             >
               {loading ? 'Signing in...' : 'Sign In'}
 
@@ -189,13 +190,13 @@ const SignInPage = () => {
             </button>
           </form>
 
-          <div className="relative my-7">
+          <div className="relative my-4">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-[#E8EDE8]" />
             </div>
 
             <div className="relative flex justify-center">
-              <span className="bg-white px-4 text-xs text-gray-400">
+              <span className="bg-white px-3 text-[10px] text-gray-400">
                 NEW TO MANDATEFLOW?
               </span>
             </div>
@@ -203,18 +204,18 @@ const SignInPage = () => {
 
           <Link
             to="/sign-up"
-            className="flex w-full items-center justify-center rounded-xl border border-[#DCE5DF] py-3.5 text-sm font-semibold text-gray-700 transition hover:border-[#00A87D] hover:bg-[#F3FBF7] hover:text-[#008A66]"
+            className="flex w-full items-center justify-center rounded-xl border border-[#DCE5DF] py-3 text-sm font-semibold text-gray-700 transition hover:border-[#00A87D] hover:bg-[#F3FBF7] hover:text-[#008A66]"
           >
             Create an account
           </Link>
 
-          <div className="mt-7 flex items-center justify-center gap-2 text-xs text-gray-400">
-            <ShieldCheck size={15} className="text-[#00A87D]" />
+          <div className="mt-4 flex items-center justify-center gap-2 text-[11px] text-gray-400">
+            <ShieldCheck size={14} className="text-[#00A87D]" />
             Your account details are kept secure
           </div>
         </motion.div>
 
-        <p className="mt-6 text-center text-xs text-gray-400">
+        <p className="mt-4 text-center text-xs text-gray-400">
           © {new Date().getFullYear()} MandateFlow. All rights reserved.
         </p>
       </div>

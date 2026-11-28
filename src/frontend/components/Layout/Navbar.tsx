@@ -34,12 +34,11 @@ const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState("");
-  const [signInModalOpen, setSignInModalOpen] = useState(false);
+  const [authModalOpen, setAuthModalOpen] = useState(false);
 
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Sticky navbar effect
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
@@ -51,12 +50,10 @@ const Navbar = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Close mobile menu after navigation
   useEffect(() => {
     setMenuOpen(false);
   }, [location.pathname, location.hash]);
 
-  // Scroll to requested homepage section
   useEffect(() => {
     if (location.pathname !== "/" || !location.hash) return;
 
@@ -78,7 +75,6 @@ const Navbar = () => {
     return () => window.clearTimeout(timer);
   }, [location.pathname, location.hash]);
 
-  // Track homepage sections while scrolling
   useEffect(() => {
     if (location.pathname !== "/") {
       setActiveSection("");
@@ -112,7 +108,6 @@ const Navbar = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [location.pathname]);
 
-  // Prevent background scrolling when mobile menu is open
   useEffect(() => {
     document.body.style.overflow = menuOpen ? "hidden" : "";
 
@@ -123,7 +118,6 @@ const Navbar = () => {
 
   const closeMenu = () => setMenuOpen(false);
 
-  // Navigate to homepage sections or other routes
   const handleNavigation = (href: string, message: string) => {
     toast.success(message, {
       duration: 1800,
@@ -168,7 +162,6 @@ const Navbar = () => {
     navigate(href);
   };
 
-  // Determine active navigation item
   const isActive = (href: string) => {
     if (href === "/") {
       return (
@@ -188,10 +181,9 @@ const Navbar = () => {
     return location.pathname === href;
   };
 
-  // Open Sign In modal
-  const openSignIn = () => {
+  const openSignUp = () => {
     closeMenu();
-    setSignInModalOpen(true);
+    setAuthModalOpen(true);
   };
 
   const desktopLinkClass = (href: string) =>
@@ -203,7 +195,6 @@ const Navbar = () => {
 
   return (
     <>
-      {/* NAVBAR */}
       <motion.header
         initial={{ y: -80, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -218,7 +209,6 @@ const Navbar = () => {
         }`}
       >
         <nav className="mx-auto flex h-[68px] max-w-[1440px] items-center justify-between px-5 sm:px-8">
-          {/* LOGO */}
           <Link
             to="/"
             onClick={(event) => {
@@ -235,7 +225,6 @@ const Navbar = () => {
             />
           </Link>
 
-          {/* DESKTOP NAVIGATION */}
           <div className="hidden items-center gap-2 font-bold lg:flex">
             {navLinks.map((link, index) => (
               <motion.div
@@ -260,16 +249,16 @@ const Navbar = () => {
             ))}
           </div>
 
-          {/* DESKTOP SIGN IN BUTTON */}
+          {/* DESKTOP SIGN UP BUTTON */}
           <div className="hidden items-center lg:flex">
             <motion.button
               type="button"
-              onClick={openSignIn}
+              onClick={openSignUp}
               whileHover={{ y: -2, scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
-              className="group relative flex items-center gap-2 overflow-hidden rounded-xl bg-[#00A87D] px-5 py-3 text-xs font-bold text-white shadow-[0_4px_12px_rgba(0,168,125,0.14)] transition-all duration-300 hover:bg-[#008A66] hover:shadow-[0_6px_18px_rgba(0,168,125,0.22)]"
+              className="group relative flex items-center gap-2 overflow-hidden font-bold rounded-xl bg-[#00A87D] px-5 py-3 text-xs font-bold text-white shadow-[0_4px_12px_rgba(0,168,125,0.14)] transition-all duration-300 hover:bg-[#008A66] hover:shadow-[0_6px_18px_rgba(0,168,125,0.22)]"
             >
-              <span className="relative z-10">Sign In</span>
+              <span className="relative z-10">Sign Up</span>
 
               <ArrowUpRight
                 size={16}
@@ -285,7 +274,6 @@ const Navbar = () => {
             </motion.button>
           </div>
 
-          {/* MOBILE MENU BUTTON */}
           <motion.button
             type="button"
             whileTap={{ scale: 0.9 }}
@@ -321,7 +309,6 @@ const Navbar = () => {
         </nav>
       </motion.header>
 
-      {/* MOBILE MENU */}
       <AnimatePresence>
         {menuOpen && (
           <>
@@ -390,7 +377,7 @@ const Navbar = () => {
                   ))}
                 </motion.div>
 
-                {/* MOBILE SIGN IN BUTTON */}
+                {/* MOBILE SIGN UP BUTTON */}
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -399,10 +386,10 @@ const Navbar = () => {
                 >
                   <button
                     type="button"
-                    onClick={openSignIn}
-                    className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#00A87D] px-5 py-3.5 text-sm font-bold text-white shadow-lg shadow-[#00A87D]/15 transition-all hover:bg-[#008A66] active:scale-[0.98]"
+                    onClick={openSignUp}
+                    className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#00A87D] px-5 py-3.5 text-sm font-bold text-white shadow-lg font-bold shadow-[#00A87D]/15 transition-all hover:bg-[#008A66] active:scale-[0.98]"
                   >
-                    Sign In
+                    Sign Up
                     <ArrowUpRight size={17} />
                   </button>
                 </motion.div>
@@ -416,10 +403,10 @@ const Navbar = () => {
         )}
       </AnimatePresence>
 
-      {/* SIGN IN / SIGN UP MODAL */}
       <LaunchAppModal
-        isOpen={signInModalOpen}
-        onClose={() => setSignInModalOpen(false)}
+        isOpen={authModalOpen}
+        onClose={() => setAuthModalOpen(false)}
+        initialView="signup"
       />
     </>
   );

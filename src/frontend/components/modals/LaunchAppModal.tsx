@@ -1,6 +1,5 @@
 
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState, type FormEvent } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import {
   X,
@@ -8,21 +7,49 @@ import {
   ShieldCheck,
   LogIn,
   UserPlus,
+  Eye,
+  EyeOff,
+  Lock,
+  User,
+  Sparkles,
 } from "lucide-react";
+import { toast } from "sonner";
 
 interface LaunchAppModalProps {
   isOpen: boolean;
   onClose: () => void;
+  initialView?: "signin" | "signup";
 }
+
+type AuthView = "signin" | "signup";
 
 const LaunchAppModal = ({
   isOpen,
   onClose,
+  initialView = "signup",
 }: LaunchAppModalProps) => {
-  const navigate = useNavigate();
+  const [activeView, setActiveView] = useState<AuthView>(initialView);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const [signInData, setSignInData] = useState({
+    username: "",
+    password: "",
+  });
+
+  const [signUpData, setSignUpData] = useState({
+    name: "",
+    username: "",
+    password: "",
+    confirmPassword: "",
+  });
 
   useEffect(() => {
     if (!isOpen) return;
+
+    setActiveView(initialView);
+    setShowPassword(false);
+    setShowConfirmPassword(false);
 
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
@@ -37,28 +64,68 @@ const LaunchAppModal = ({
       document.body.style.overflow = previousOverflow;
       document.removeEventListener("keydown", handleEscape);
     };
-  }, [isOpen, onClose]);
+  }, [isOpen, initialView, onClose]);
 
-  const handleSignIn = () => {
-    onClose();
-    navigate("/sign-in");
+  const handleSignIn = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    if (!signInData.username.trim() || !signInData.password) {
+      toast.error("Please complete all fields.");
+      return;
+    }
+
+    toast.info("Sign in authentication is not connected yet.");
   };
 
-  const handleSignUp = () => {
-    onClose();
-    navigate("/sign-up");
+  const handleSignUp = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    if (
+      !signUpData.name.trim() ||
+      !signUpData.username.trim() ||
+      !signUpData.password ||
+      !signUpData.confirmPassword
+    ) {
+      toast.error("Please complete all fields.");
+      return;
+    }
+
+    if (!/^[a-zA-Z0-9_]{3,20}$/.test(signUpData.username)) {
+      toast.error(
+        "Username must be 3–20 characters and contain only letters, numbers, or underscores."
+      );
+      return;
+    }
+
+    if (signUpData.password.length < 8) {
+      toast.error("Your password must contain at least 8 characters.");
+      return;
+    }
+
+    if (signUpData.password !== signUpData.confirmPassword) {
+      toast.error("Your passwords do not match.");
+      return;
+    }
+
+    toast.info("Account registration is not connected yet.");
   };
+
+  const inputClass =
+    "w-full rounded-xl border border-[#E2EAE5] bg-white py-3.5 pl-11 pr-4 text-sm font-medium text-[#101B1B] outline-none transition-all placeholder:text-[#A1ADA6] focus:border-[#00A87D] focus:ring-4 focus:ring-[#00A87D]/10";
+
+  const labelClass =
+    "mb-2 block text-xs font-bold text-[#34433C]";
 
   return (
     <AnimatePresence>
       {isOpen && (
         <motion.div
-          key="launch-modal-backdrop"
+          key="auth-modal-backdrop"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.25, ease: "easeOut" }}
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-[#07110F]/65 px-4 py-6 backdrop-blur-md"
+          transition={{ duration: 0.25 }}
+          className="fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto bg-[#07110F]/70 px-4 py-6 backdrop-blur-md"
           onMouseDown={(event) => {
             if (event.target === event.currentTarget) onClose();
           }}
@@ -66,29 +133,16 @@ const LaunchAppModal = ({
           <motion.div
             role="dialog"
             aria-modal="true"
-            aria-labelledby="launch-modal-title"
-            initial={{
-              opacity: 0,
-              scale: 0.88,
-              y: 35,
-            }}
-            animate={{
-              opacity: 1,
-              scale: 1,
-              y: 0,
-            }}
-            exit={{
-              opacity: 0,
-              scale: 0.92,
-              y: 20,
-            }}
+            aria-labelledby="auth-modal-title"
+            initial={{ opacity: 0, scale: 0.9, y: 25 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.94, y: 20 }}
             transition={{
               type: "spring",
               stiffness: 280,
-              damping: 24,
-              mass: 0.8,
+              damping: 25,
             }}
-            className="relative w-full max-w-[440px] overflow-hidden rounded-[28px] border border-[#E5EEE9] bg-[#FAFCFA] p-7 shadow-[0_30px_100px_rgba(0,0,0,0.25)] sm:p-9"
+            className="relative my-auto w-full max-w-[460px] overflow-hidden rounded-[28px] border border-[#E5EEE9] bg-[#FAFCFA] p-6 shadow-[0_30px_100px_rgba(0,0,0,0.3)] sm:p-9"
           >
             {/* CLOSE BUTTON */}
             <motion.button
@@ -97,58 +151,53 @@ const LaunchAppModal = ({
               aria-label="Close modal"
               whileHover={{ scale: 1.08, rotate: 90 }}
               whileTap={{ scale: 0.9 }}
-              className="absolute right-5 top-5 flex h-9 w-9 items-center justify-center rounded-full bg-[#EEF4F0] text-[#52615B] transition hover:bg-[#DDEAE3] hover:text-[#101B1B]"
+              className="absolute right-5 top-5 flex h-9 w-9 items-center justify-center rounded-full bg-[#EEF4F0] text-[#52615B] transition hover:bg-[#DDEAE3]"
             >
               <X size={18} />
             </motion.button>
 
-            {/* BRAND MARK */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.7, rotate: -15 }}
-              animate={{ opacity: 1, scale: 1, rotate: 0 }}
-              transition={{ delay: 0.12, duration: 0.4 }}
-              className="mb-7 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#E2F8EF] text-[#00A87D]"
-            >
-              <UserPlus size={27} strokeWidth={2.2} />
-            </motion.div>
+            {/* BRAND ICON */}
+            <div className="mb-6 flex h-13 w-13 items-center justify-center rounded-2xl bg-[#E2F8EF] p-3 text-[#00A87D]">
+              {activeView === "signup" ? (
+                <UserPlus size={25} />
+              ) : (
+                <LogIn size={25} />
+              )}
+            </div>
 
             {/* HEADING */}
-            <motion.div
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.18, duration: 0.4 }}
-              className="mb-3"
-            >
-              <p className="mb-2 text-[10px] font-extrabold uppercase tracking-[2px] text-[#00A87D]">
-                Welcome to MandateFlow
-              </p>
-
-              <h2
-                id="launch-modal-title"
-                className="text-2xl font-extrabold tracking-tight text-[#101B1B] sm:text-3xl"
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeView}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.2 }}
               >
-                Your agent economy starts here.
-              </h2>
-            </motion.div>
+                <p className="mb-2 flex items-center gap-2 text-[10px] font-extrabold uppercase tracking-[2px] text-[#00A87D]">
+                  <Sparkles size={13} />
+                  Welcome to MandateFlow
+                </p>
 
-            {/* DESCRIPTION */}
-            <motion.p
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.24, duration: 0.4 }}
-              className="mb-7 text-sm font-medium leading-7 text-[#68766F]"
-            >
-              Sign in to your account or create a new one to discover AI agents,
-              explore services, and participate in the MandateFlow ecosystem.
-            </motion.p>
+                <h2
+                  id="auth-modal-title"
+                  className="text-2xl font-extrabold tracking-tight text-[#101B1B] sm:text-3xl"
+                >
+                  {activeView === "signup"
+                    ? "Create your account."
+                    : "Welcome back."}
+                </h2>
 
-            {/* ACCOUNT INFORMATION */}
-            <motion.div
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3, duration: 0.4 }}
-              className="mb-7 flex items-center gap-3 rounded-2xl border border-[#E1EBE5] bg-white p-4"
-            >
+                <p className="mt-3 text-sm font-medium leading-6 text-[#68766F]">
+                  {activeView === "signup"
+                    ? "Join the MandateFlow ecosystem and discover a smarter way to work with AI agents."
+                    : "Sign in to access your workspace, manage your agents, and continue where you left off."}
+                </p>
+              </motion.div>
+            </AnimatePresence>
+
+            {/* ACCOUNT SECURITY */}
+            <div className="my-6 flex items-center gap-3 rounded-2xl border border-[#E1EBE5] bg-white p-3.5">
               <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#E7F8F0] text-[#00A87D]">
                 <ShieldCheck size={20} />
               </div>
@@ -157,64 +206,316 @@ const LaunchAppModal = ({
                 <p className="text-xs font-bold text-[#101B1B]">
                   Your account, your workspace
                 </p>
-
-                <p className="mt-1 text-[11px] font-medium leading-5 text-[#829089]">
-                  Access MandateFlow with your personal account.
+                <p className="mt-1 text-[11px] font-medium text-[#829089]">
+                  Secure access to your MandateFlow account.
                 </p>
               </div>
+            </div>
 
-              <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-[#00A87D]" />
-            </motion.div>
+            {/* AUTH FORMS */}
+            <AnimatePresence mode="wait">
+              {activeView === "signup" ? (
+                <motion.form
+                  key="signup-form"
+                  initial={{ opacity: 0, x: 15 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -15 }}
+                  transition={{ duration: 0.2 }}
+                  onSubmit={handleSignUp}
+                  className="space-y-4"
+                >
+                  {/* FULL NAME */}
+                  <div>
+                    <label className={labelClass}>Full Name</label>
 
-            {/* AUTHENTICATION OPTIONS */}
-            <motion.div
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.36, duration: 0.4 }}
-              className="flex flex-col gap-3"
-            >
-              {/* SIGN IN */}
-              <motion.button
-                type="button"
-                onClick={handleSignIn}
-                whileHover={{ scale: 1.02, y: -2 }}
-                whileTap={{ scale: 0.97 }}
-                className="group flex w-full items-center justify-center gap-3 rounded-xl bg-[#00A87D] px-6 py-4 text-sm font-extrabold text-white shadow-[0_8px_24px_rgba(0,168,125,0.18)] transition-all duration-300 hover:bg-[#008A66] hover:shadow-[0_12px_28px_rgba(0,168,125,0.25)]"
-              >
-                <LogIn size={18} />
-                Sign In
-                <ArrowRight
-                  size={17}
-                  className="transition-transform duration-300 group-hover:translate-x-1"
-                />
-              </motion.button>
+                    <div className="relative">
+                      <User
+                        size={17}
+                        className="absolute left-4 top-1/2 -translate-y-1/2 text-[#98A69E]"
+                      />
 
-              {/* SIGN UP */}
-              <motion.button
-                type="button"
-                onClick={handleSignUp}
-                whileHover={{ scale: 1.02, y: -2 }}
-                whileTap={{ scale: 0.97 }}
-                className="group flex w-full items-center justify-center gap-3 rounded-xl border border-[#DCE9E1] bg-white px-6 py-4 text-sm font-extrabold text-[#101B1B] transition-all duration-300 hover:border-[#00A87D]/50 hover:bg-[#EAF9F2] hover:text-[#008A66]"
-              >
-                <UserPlus size={18} />
-                Create an Account
-                <ArrowRight
-                  size={17}
-                  className="transition-transform duration-300 group-hover:translate-x-1"
-                />
-              </motion.button>
-            </motion.div>
+                      <input
+                        type="text"
+                        name="name"
+                        autoComplete="name"
+                        placeholder="Enter your full name"
+                        value={signUpData.name}
+                        onChange={(event) =>
+                          setSignUpData((previous) => ({
+                            ...previous,
+                            name: event.target.value,
+                          }))
+                        }
+                        className={inputClass}
+                        required
+                      />
+                    </div>
+                  </div>
 
-            {/* FOOTNOTE */}
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.42, duration: 0.4 }}
-              className="mt-6 text-center text-[10px] font-medium leading-5 text-[#91A098]"
-            >
-              Join MandateFlow and discover a smarter way to work with AI agents.
-            </motion.p>
+                  {/* USERNAME */}
+                  <div>
+                    <label className={labelClass}>Username</label>
+
+                    <div className="relative">
+                      <User
+                        size={17}
+                        className="absolute left-4 top-1/2 -translate-y-1/2 text-[#98A69E]"
+                      />
+
+                      <input
+                        type="text"
+                        name="username"
+                        autoComplete="username"
+                        placeholder="Choose a username"
+                        value={signUpData.username}
+                        onChange={(event) =>
+                          setSignUpData((previous) => ({
+                            ...previous,
+                            username: event.target.value,
+                          }))
+                        }
+                        className={inputClass}
+                        minLength={3}
+                        maxLength={20}
+                        required
+                      />
+                    </div>
+
+                    <p className="mt-1.5 text-[10px] font-medium text-[#98A69E]">
+                      3–20 characters. Letters, numbers, and underscores only.
+                    </p>
+                  </div>
+
+                  {/* PASSWORD */}
+                  <div>
+                    <label className={labelClass}>Password</label>
+
+                    <div className="relative">
+                      <Lock
+                        size={17}
+                        className="absolute left-4 top-1/2 -translate-y-1/2 text-[#98A69E]"
+                      />
+
+                      <input
+                        type={showPassword ? "text" : "password"}
+                        name="password"
+                        autoComplete="new-password"
+                        placeholder="Create a password"
+                        value={signUpData.password}
+                        onChange={(event) =>
+                          setSignUpData((previous) => ({
+                            ...previous,
+                            password: event.target.value,
+                          }))
+                        }
+                        className={`${inputClass} pr-12`}
+                        minLength={8}
+                        required
+                      />
+
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword((previous) => !previous)}
+                        aria-label={
+                          showPassword ? "Hide password" : "Show password"
+                        }
+                        className="absolute right-4 top-1/2 -translate-y-1/2 text-[#98A69E] hover:text-[#00A87D]"
+                      >
+                        {showPassword ? (
+                          <EyeOff size={17} />
+                        ) : (
+                          <Eye size={17} />
+                        )}
+                      </button>
+                    </div>
+
+                    <p className="mt-1.5 text-[10px] font-medium text-[#98A69E]">
+                      Use at least 8 characters.
+                    </p>
+                  </div>
+
+                  {/* CONFIRM PASSWORD */}
+                  <div>
+                    <label className={labelClass}>Confirm Password</label>
+
+                    <div className="relative">
+                      <Lock
+                        size={17}
+                        className="absolute left-4 top-1/2 -translate-y-1/2 text-[#98A69E]"
+                      />
+
+                      <input
+                        type={showConfirmPassword ? "text" : "password"}
+                        name="confirmPassword"
+                        autoComplete="new-password"
+                        placeholder="Confirm your password"
+                        value={signUpData.confirmPassword}
+                        onChange={(event) =>
+                          setSignUpData((previous) => ({
+                            ...previous,
+                            confirmPassword: event.target.value,
+                          }))
+                        }
+                        className={`${inputClass} pr-12`}
+                        required
+                      />
+
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setShowConfirmPassword((previous) => !previous)
+                        }
+                        aria-label={
+                          showConfirmPassword
+                            ? "Hide password"
+                            : "Show password"
+                        }
+                        className="absolute right-4 top-1/2 -translate-y-1/2 text-[#98A69E] hover:text-[#00A87D]"
+                      >
+                        {showConfirmPassword ? (
+                          <EyeOff size={17} />
+                        ) : (
+                          <Eye size={17} />
+                        )}
+                      </button>
+                    </div>
+                  </div>
+
+                  <button
+                    type="submit"
+                    className="group mt-2 flex w-full items-center justify-center gap-3 rounded-xl bg-[#00A87D] px-6 py-4 text-sm font-extrabold text-white shadow-[0_8px_24px_rgba(0,168,125,0.18)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#008A66] hover:shadow-[0_12px_28px_rgba(0,168,125,0.25)]"
+                  >
+                    Create Account
+
+                    <ArrowRight
+                      size={18}
+                      className="transition-transform duration-300 group-hover:translate-x-1"
+                    />
+                  </button>
+                </motion.form>
+              ) : (
+                /* SIGN IN FORM */
+                <motion.form
+                  key="signin-form"
+                  initial={{ opacity: 0, x: 15 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -15 }}
+                  transition={{ duration: 0.2 }}
+                  onSubmit={handleSignIn}
+                  className="space-y-5"
+                >
+                  {/* USERNAME */}
+                  <div>
+                    <label className={labelClass}>Username</label>
+
+                    <div className="relative">
+                      <User
+                        size={17}
+                        className="absolute left-4 top-1/2 -translate-y-1/2 text-[#98A69E]"
+                      />
+
+                      <input
+                        type="text"
+                        name="username"
+                        autoComplete="username"
+                        placeholder="Enter your username"
+                        value={signInData.username}
+                        onChange={(event) =>
+                          setSignInData((previous) => ({
+                            ...previous,
+                            username: event.target.value,
+                          }))
+                        }
+                        className={inputClass}
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  {/* PASSWORD */}
+                  <div>
+                    <label className={labelClass}>Password</label>
+
+                    <div className="relative">
+                      <Lock
+                        size={17}
+                        className="absolute left-4 top-1/2 -translate-y-1/2 text-[#98A69E]"
+                      />
+
+                      <input
+                        type={showPassword ? "text" : "password"}
+                        name="password"
+                        autoComplete="current-password"
+                        placeholder="Enter your password"
+                        value={signInData.password}
+                        onChange={(event) =>
+                          setSignInData((previous) => ({
+                            ...previous,
+                            password: event.target.value,
+                          }))
+                        }
+                        className={`${inputClass} pr-12`}
+                        required
+                      />
+
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword((previous) => !previous)}
+                        aria-label={
+                          showPassword ? "Hide password" : "Show password"
+                        }
+                        className="absolute right-4 top-1/2 -translate-y-1/2 text-[#98A69E] hover:text-[#00A87D]"
+                      >
+                        {showPassword ? (
+                          <EyeOff size={17} />
+                        ) : (
+                          <Eye size={17} />
+                        )}
+                      </button>
+                    </div>
+                  </div>
+
+                  <button
+                    type="submit"
+                    className="group flex w-full items-center justify-center gap-3 rounded-xl bg-[#00A87D] px-6 py-4 text-sm font-extrabold text-white shadow-[0_8px_24px_rgba(0,168,125,0.18)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#008A66] hover:shadow-[0_12px_28px_rgba(0,168,125,0.25)]"
+                  >
+                    Sign In
+
+                    <ArrowRight
+                      size={18}
+                      className="transition-transform duration-300 group-hover:translate-x-1"
+                    />
+                  </button>
+                </motion.form>
+              )}
+            </AnimatePresence>
+
+            {/* SWITCH AUTH VIEW */}
+            <div className="mt-6 border-t border-[#E8EDE8] pt-5 text-center">
+              <p className="text-xs font-medium text-[#829089]">
+                {activeView === "signup"
+                  ? "Already have an account?"
+                  : "Don't have an account?"}
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setActiveView((previous) =>
+                      previous === "signup" ? "signin" : "signup"
+                    );
+                    setShowPassword(false);
+                    setShowConfirmPassword(false);
+                  }}
+                  className="ml-1.5 font-extrabold text-[#008A66] transition-colors hover:text-[#00A87D]"
+                >
+                  {activeView === "signup" ? "Sign In" : "Create Account"}
+                </button>
+              </p>
+            </div>
+
+            <p className="mt-5 text-center text-[10px] font-medium leading-5 text-[#A0AAA4]">
+              Intelligent agents. Seamless collaboration.
+            </p>
           </motion.div>
         </motion.div>
       )}
