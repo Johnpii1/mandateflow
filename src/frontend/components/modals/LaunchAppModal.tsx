@@ -1,5 +1,6 @@
 
 import { useEffect, useState, type FormEvent } from "react";
+import { useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "motion/react";
 import {
   X,
@@ -11,9 +12,12 @@ import {
   EyeOff,
   Lock,
   User,
+  Mail,
   Sparkles,
 } from "lucide-react";
 import { toast } from "sonner";
+import { ApiError } from "../../services/api";
+import { useAuth } from "../../auth/AuthContext";
 
 interface LaunchAppModalProps {
   isOpen: boolean;
@@ -31,25 +35,25 @@ const LaunchAppModal = ({
   const [activeView, setActiveView] = useState<AuthView>(initialView);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [signInLoading, setSignInLoading] = useState(false);
+  const [signUpLoading, setSignUpLoading] = useState(false);
+  const { login, register } = useAuth();
+  const navigate = useNavigate();
 
   const [signInData, setSignInData] = useState({
-    username: "",
+    email: "",
     password: "",
   });
 
   const [signUpData, setSignUpData] = useState({
     name: "",
-    username: "",
+    email: "",
     password: "",
     confirmPassword: "",
   });
 
   useEffect(() => {
     if (!isOpen) return;
-
-    setActiveView(initialView);
-    setShowPassword(false);
-    setShowConfirmPassword(false);
 
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
@@ -66,23 +70,33 @@ const LaunchAppModal = ({
     };
   }, [isOpen, initialView, onClose]);
 
-  const handleSignIn = (event: FormEvent<HTMLFormElement>) => {
+  const handleSignIn = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if (!signInData.username.trim() || !signInData.password) {
+    if (!signInData.email.trim() || !signInData.password) {
       toast.error("Please complete all fields.");
       return;
     }
 
-    toast.info("Sign in authentication is not connected yet.");
+    setSignInLoading(true);
+    try {
+      await login(signInData.email.trim().toLowerCase(), signInData.password);
+      toast.success("You are signed in.");
+      onClose();
+      navigate("/dashboard");
+    } catch (error) {
+      toast.error(error instanceof ApiError ? error.message : "Unable to sign in. Please try again.");
+    } finally {
+      setSignInLoading(false);
+    }
   };
 
-  const handleSignUp = (event: FormEvent<HTMLFormElement>) => {
+  const handleSignUp = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     if (
       !signUpData.name.trim() ||
-      !signUpData.username.trim() ||
+      !signUpData.email.trim() ||
       !signUpData.password ||
       !signUpData.confirmPassword
     ) {
@@ -90,15 +104,8 @@ const LaunchAppModal = ({
       return;
     }
 
-    if (!/^[a-zA-Z0-9_]{3,20}$/.test(signUpData.username)) {
-      toast.error(
-        "Username must be 3–20 characters and contain only letters, numbers, or underscores."
-      );
-      return;
-    }
-
-    if (signUpData.password.length < 8) {
-      toast.error("Your password must contain at least 8 characters.");
+    if (signUpData.password.length < 10 || signUpData.password.length > 128) {
+      toast.error("Your password must contain 10 to 128 characters.");
       return;
     }
 
@@ -107,7 +114,17 @@ const LaunchAppModal = ({
       return;
     }
 
-    toast.info("Account registration is not connected yet.");
+    setSignUpLoading(true);
+    try {
+      await register(signUpData.email.trim().toLowerCase(), signUpData.password, signUpData.name.trim());
+      toast.success("Account created. You are signed in.");
+      onClose();
+      navigate("/dashboard");
+    } catch (error) {
+      toast.error(error instanceof ApiError ? error.message : "Unable to create your account. Please try again.");
+    } finally {
+      setSignUpLoading(false);
+    }
   };
 
   const inputClass =
@@ -252,38 +269,34 @@ const LaunchAppModal = ({
                     </div>
                   </div>
 
-                  {/* USERNAME */}
+                  {/* EMAIL */}
                   <div>
-                    <label className={labelClass}>Username</label>
+                    <label className={labelClass} htmlFor="modal-signup-email">Email address</label>
 
                     <div className="relative">
-                      <User
+                      <Mail
                         size={17}
                         className="absolute left-4 top-1/2 -translate-y-1/2 text-[#98A69E]"
                       />
 
                       <input
-                        type="text"
-                        name="username"
-                        autoComplete="username"
-                        placeholder="Choose a username"
-                        value={signUpData.username}
+                        id="modal-signup-email"
+                        type="email"
+                        name="email"
+                        autoComplete="email"
+                        placeholder="you@example.com"
+                        value={signUpData.email}
                         onChange={(event) =>
                           setSignUpData((previous) => ({
                             ...previous,
-                            username: event.target.value,
+                            email: event.target.value,
                           }))
                         }
                         className={inputClass}
-                        minLength={3}
-                        maxLength={20}
+                        maxLength={254}
                         required
                       />
                     </div>
-
-                    <p className="mt-1.5 text-[10px] font-medium text-[#98A69E]">
-                      3–20 characters. Letters, numbers, and underscores only.
-                    </p>
                   </div>
 
                   {/* PASSWORD */}
@@ -309,7 +322,8 @@ const LaunchAppModal = ({
                           }))
                         }
                         className={`${inputClass} pr-12`}
-                        minLength={8}
+                        minLength={10}
+                        maxLength={128}
                         required
                       />
 
@@ -330,7 +344,7 @@ const LaunchAppModal = ({
                     </div>
 
                     <p className="mt-1.5 text-[10px] font-medium text-[#98A69E]">
-                      Use at least 8 characters.
+                      Use 10 to 128 characters.
                     </p>
                   </div>
 
@@ -383,9 +397,10 @@ const LaunchAppModal = ({
 
                   <button
                     type="submit"
-                    className="group mt-2 flex w-full items-center justify-center gap-3 rounded-xl bg-[#00A87D] px-6 py-4 text-sm font-extrabold text-white shadow-[0_8px_24px_rgba(0,168,125,0.18)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#008A66] hover:shadow-[0_12px_28px_rgba(0,168,125,0.25)]"
+                    disabled={signUpLoading}
+                    className="group mt-2 flex w-full items-center justify-center gap-3 rounded-xl bg-[#00A87D] px-6 py-4 text-sm font-extrabold text-white shadow-[0_8px_24px_rgba(0,168,125,0.18)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#008A66] hover:shadow-[0_12px_28px_rgba(0,168,125,0.25)] disabled:cursor-not-allowed disabled:opacity-60"
                   >
-                    Create Account
+                    {signUpLoading ? "Creating account…" : "Create Account"}
 
                     <ArrowRight
                       size={18}
@@ -415,19 +430,21 @@ const LaunchAppModal = ({
                       />
 
                       <input
-                        type="text"
-                        name="username"
-                        autoComplete="username"
-                        placeholder="Enter your username"
-                        value={signInData.username}
+                        id="modal-signin-email"
+                        type="email"
+                        name="email"
+                        autoComplete="email"
+                        placeholder="you@example.com"
+                        value={signInData.email}
                         onChange={(event) =>
                           setSignInData((previous) => ({
                             ...previous,
-                            username: event.target.value,
+                            email: event.target.value,
                           }))
                         }
                         className={inputClass}
                         required
+                        maxLength={254}
                       />
                     </div>
                   </div>
@@ -477,9 +494,10 @@ const LaunchAppModal = ({
 
                   <button
                     type="submit"
-                    className="group flex w-full items-center justify-center gap-3 rounded-xl bg-[#00A87D] px-6 py-4 text-sm font-extrabold text-white shadow-[0_8px_24px_rgba(0,168,125,0.18)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#008A66] hover:shadow-[0_12px_28px_rgba(0,168,125,0.25)]"
+                    disabled={signInLoading}
+                    className="group flex w-full items-center justify-center gap-3 rounded-xl bg-[#00A87D] px-6 py-4 text-sm font-extrabold text-white shadow-[0_8px_24px_rgba(0,168,125,0.18)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#008A66] hover:shadow-[0_12px_28px_rgba(0,168,125,0.25)] disabled:cursor-not-allowed disabled:opacity-60"
                   >
-                    Sign In
+                    {signInLoading ? "Signing in…" : "Sign In"}
 
                     <ArrowRight
                       size={18}

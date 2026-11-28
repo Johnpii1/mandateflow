@@ -11,6 +11,7 @@ import { env } from '../../config/env.js';
 import { User } from '../users/user.model.js';
 import { Session } from './session.model.js';
 import { WalletNonce } from './wallet-nonce.model.js';
+import { RefreshToken } from './refresh-token.model.js';
 import type { LoginInput, RegisterInput } from './auth.validation.js';
 
 const SESSION_DURATION_MS = 7 * 24 * 60 * 60 * 1000;
@@ -78,6 +79,41 @@ async function createSession(userId: string) {
   return { token, expiresAt };
 }
 
+// Refresh‑token utilities
+const REFRESH_TOKEN_DURATION_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
+
+/** Create a refresh token and persist its hash */
+async function createRefreshToken(userId: string) {
+  const token = randomBytes(48).toString('hex');
+  const expiresAt = new Date(Date.now() + REFRESH_TOKEN_DURATION_MS);
+  await RefreshToken.create({
+    userId,
+    tokenHash: createHash('sha256').update(token).digest('hex'),
+    expiresAt,
+  });
+  return { token, expiresAt };
+}
+
+/** Verify a presented refresh token and return the owning user id */
+async function verifyRefreshToken(token: string): Promise<string> {
+  const tokenHash = createHash('sha256').update(token).digest('hex');
+  const doc = await RefreshToken.findOne({ tokenHash });
+  if (!doc) throw new AppError('Invalid refresh token', 401);
+  if (doc.expiresAt.getTime() < Date.now()) {
+    await RefreshToken.deleteOne({ _id: doc._id });
+    throw new AppError('Refresh token expired', 401);
+  }
+  return doc.userId.toString();
+}
+
+/** Rotate a refresh token – delete old and issue a new one */
+async function rotateRefreshToken(oldToken: string) {
+  const userId = await verifyRefreshToken(oldToken);
+  await RefreshToken.deleteOne({ tokenHash: createHash('sha256').update(oldToken).digest('hex') });
+  return await createRefreshToken(userId);
+}
+
+
 export async function register(input: RegisterInput) {
   const email = input.email.trim().toLowerCase();
   const existingUser = await User.exists({ email });
@@ -98,7 +134,8 @@ export async function register(input: RegisterInput) {
   }
 
   const session = await createSession(user.id);
-  return { user: publicUser(user), ...session };
+  const refresh = await createRefreshToken(user.id);
+  return { user: publicUser(user), ...session, refreshToken: refresh.token, refreshExpiresAt: refresh.expiresAt };
 }
 
 export async function login(input: LoginInput) {
@@ -112,7 +149,8 @@ export async function login(input: LoginInput) {
   }
 
   const session = await createSession(user.id);
-  return { user: publicUser(user), ...session };
+  const refresh = await createRefreshToken(user.id);
+  return { user: publicUser(user), ...session, refreshToken: refresh.token, refreshExpiresAt: refresh.expiresAt };
 }
 
 export async function logout(token: string): Promise<void> {

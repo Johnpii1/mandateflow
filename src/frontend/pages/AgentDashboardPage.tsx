@@ -36,6 +36,7 @@ import SecurityAgent from '../../assets/images/security-agent.png'
 import DeveloperAgent from '../../assets/images/developer-agent-2.png'
 import ResearchAgent from '../../assets/images/research-agent-1.png'
 import DesignAgent from '../../assets/images/design-agent-3.png'
+import WalletLinkCard from '../components/WalletLinkCard'
 
 const STORAGE_KEY = 'mandateflow_agents'
 const REQUESTS_STORAGE_KEY = 'mandateflow_hiring_requests'
@@ -1534,6 +1535,8 @@ const AgentDashboardPage = () => {
 
           {/* OVERVIEW */}
           {activeTab === 'overview' && (
+            <>
+            <WalletLinkCard />
             <div className="grid min-w-0 gap-7 xl:grid-cols-[minmax(0,1.4fr)_minmax(0,0.8fr)]">
               <section className="min-w-0">
                 <div className="mb-5 flex min-w-0 items-center justify-between gap-3">
@@ -1806,6 +1809,7 @@ const AgentDashboardPage = () => {
                 {renderTasks()}
               </section>
             </div>
+            </>
           )}
 
           {/* MY AGENTS */}

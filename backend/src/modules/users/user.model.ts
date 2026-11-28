@@ -5,6 +5,7 @@ export interface UserRecord {
   passwordHash: string;
   displayName: string;
   status: 'active' | 'disabled';
+  role: 'user' | 'admin'; // new role field
   wallets: Array<{
     address: string;
     chainId: number;
@@ -21,6 +22,7 @@ const userSchema = new Schema<UserRecord>(
     passwordHash: { type: String, required: true, select: false },
     displayName: { type: String, required: true, trim: true, maxlength: 80 },
     status: { type: String, enum: ['active', 'disabled'], default: 'active', required: true },
+    role: { type: String, enum: ['user', 'admin'], default: 'user', required: true }, // new field
     wallets: {
       type: [{
         address: { type: String, required: true, lowercase: true },

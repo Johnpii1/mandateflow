@@ -1,6 +1,6 @@
 
 import { useState, type ChangeEvent, type FormEvent } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { motion } from 'motion/react'
 import {
   ArrowLeft,
@@ -8,18 +8,23 @@ import {
   Eye,
   EyeOff,
   LockKeyhole,
-  User,
+  Mail,
   ShieldCheck,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import Mandateflow from '../../assets/images/logomd.png'
+import { ApiError } from '../services/api'
+import { useAuth } from '../auth/AuthContext'
 
 const SignInPage = () => {
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
+  const { login } = useAuth()
+  const navigate = useNavigate()
+  const location = useLocation()
 
   const [formData, setFormData] = useState({
-    username: '',
+    email: '',
     password: '',
   })
 
@@ -35,7 +40,7 @@ const SignInPage = () => {
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
-    if (!formData.username.trim() || !formData.password) {
+    if (!formData.email.trim() || !formData.password) {
       toast.error('Please fill in all fields')
       return
     }
@@ -43,11 +48,15 @@ const SignInPage = () => {
     setLoading(true)
 
     try {
-      // Authentication API will be connected here.
-      // Send username and password to the backend.
-      toast.info('Authentication is not connected yet')
-    } catch {
-      toast.error('Unable to sign in. Please try again.')
+      await login(formData.email.trim().toLowerCase(), formData.password)
+      toast.success('You are signed in.')
+      const from = (location.state as { from?: { pathname?: string; search?: string; hash?: string } } | null)?.from
+      const returnTo = from?.pathname
+        ? `${from.pathname}${from.search ?? ''}${from.hash ?? ''}`
+        : '/dashboard'
+      navigate(returnTo, { replace: true })
+    } catch (error) {
+      toast.error(error instanceof ApiError ? error.message : 'Unable to sign in. Please try again.')
     } finally {
       setLoading(false)
     }
@@ -97,27 +106,28 @@ const SignInPage = () => {
           <form onSubmit={handleSubmit} className="space-y-3">
             <div>
               <label
-                htmlFor="username"
+                htmlFor="email"
                 className="mb-1.5 block text-xs font-semibold text-gray-700"
               >
-                Username
+                Email address
               </label>
 
               <div className="relative">
-                <User
+                <Mail
                   size={17}
                   className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"
                 />
 
                 <input
-                  id="username"
-                  name="username"
-                  type="text"
-                  autoComplete="username"
-                  placeholder="Enter your username"
-                  value={formData.username}
+                  id="email"
+                  name="email"
+                  type="email"
+                  autoComplete="email"
+                  placeholder="you@example.com"
+                  value={formData.email}
                   onChange={handleChange}
                   required
+                  maxLength={254}
                   className="w-full rounded-xl border border-[#E8EDE8] bg-white py-3 pl-10 pr-3 text-sm text-gray-900 outline-none transition focus:border-[#00A87D] focus:ring-2 focus:ring-[#00A87D]/10"
                 />
               </div>
@@ -136,7 +146,7 @@ const SignInPage = () => {
                   type="button"
                   onClick={() =>
                     toast.info(
-                      'Password recovery will be available once authentication is connected.'
+                      'Password recovery is not available yet.'
                     )
                   }
                   className="text-xs font-semibold text-[#00A87D] hover:text-[#008A66]"
