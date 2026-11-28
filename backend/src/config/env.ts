@@ -7,6 +7,16 @@ const envSchema = z.object({
   CLIENT_ORIGIN: z.string().url().default('http://localhost:5173'),
   MONGODB_URI: z.string().min(1, 'MONGODB_URI is required'),
   SESSION_SECRET: z.string().min(32, 'SESSION_SECRET must be at least 32 characters'),
+  HSP_COORDINATOR_URL: z.string().url().optional(),
+  HSP_API_KEY: z.string().min(1).optional(),
+}).superRefine((values, context) => {
+  if (Boolean(values.HSP_COORDINATOR_URL) !== Boolean(values.HSP_API_KEY)) {
+    context.addIssue({
+      code: 'custom',
+      path: ['HSP_COORDINATOR_URL'],
+      message: 'HSP_COORDINATOR_URL and HSP_API_KEY must be configured together',
+    });
+  }
 });
 
 const parsedEnv = envSchema.safeParse(process.env);
