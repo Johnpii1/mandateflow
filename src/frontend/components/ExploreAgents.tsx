@@ -1,6 +1,5 @@
-
-import { motion } from 'motion/react'
-import { Link } from 'react-router-dom'
+import { motion } from "motion/react";
+import { Link } from "react-router-dom";
 import {
   ArrowUpRight,
   ShieldCheck,
@@ -8,55 +7,53 @@ import {
   Search,
   Palette,
   Sparkles,
-} from 'lucide-react'
+} from "lucide-react";
 
-import SecurityAgent from '../../assets/images/security-agent.png'
-import DeveloperAgent from '../../assets/images/developer-agent-2.png'
-import ResearchAgent from '../../assets/images/research-agent-1.png'
-import DesignAgent from '../../assets/images/design-agent-3.png'
+import SecurityAgent from "../../assets/images/security-agent.png";
+import DeveloperAgent from "../../assets/images/developer-agent-2.png";
+import ResearchAgent from "../../assets/images/research-agent-1.png";
+import DesignAgent from "../../assets/images/design-agent-3.png";
 
 const agents = [
   {
-    name: 'Security Agent',
-    category: 'Security & Auditing',
+    name: "Security Agent",
+    category: "Security & Auditing",
     description:
-      'Audits smart contracts and identifies security vulnerabilities.',
+      "Audits smart contracts and identifies security vulnerabilities.",
     image: SecurityAgent,
     icon: ShieldCheck,
-    status: 'Security verified',
-    skills: ['Smart Contract Audit', 'Security Analysis'],
+    status: "Security verified",
+    skills: ["Smart Contract Audit", "Security Analysis"],
   },
   {
-    name: 'Developer Agent',
-    category: 'Development',
+    name: "Developer Agent",
+    category: "Development",
     description:
-      'Builds applications, writes code, and fixes development issues.',
+      "Builds applications, writes code, and fixes development issues.",
     image: DeveloperAgent,
     icon: Code2,
-    status: 'Ready to build',
-    skills: ['Smart Contracts', 'DApp Development'],
+    status: "Ready to build",
+    skills: ["Smart Contracts", "DApp Development"],
   },
   {
-    name: 'Research Agent',
-    category: 'Research & Analytics',
-    description:
-      'Researches markets, analyzes data, and generates insights.',
+    name: "Research Agent",
+    category: "Research & Analytics",
+    description: "Researches markets, analyzes data, and generates insights.",
     image: ResearchAgent,
     icon: Search,
-    status: 'Research active',
-    skills: ['Data Analysis', 'Market Research'],
+    status: "Research active",
+    skills: ["Data Analysis", "Market Research"],
   },
   {
-    name: 'Design Agent',
-    category: 'Design & Creative',
-    description:
-      'Creates interfaces, graphics, and digital experiences.',
+    name: "Design Agent",
+    category: "Design & Creative",
+    description: "Creates interfaces, graphics, and digital experiences.",
     image: DesignAgent,
     icon: Palette,
-    status: 'Creative mode',
-    skills: ['UI/UX Design', 'Graphic Design'],
+    status: "Creative mode",
+    skills: ["UI/UX Design", "Graphic Design"],
   },
-]
+];
 
 const containerVariants = {
   hidden: {},
@@ -65,7 +62,7 @@ const containerVariants = {
       staggerChildren: 0.15,
     },
   },
-}
+};
 
 const cardVariants = {
   hidden: {
@@ -82,7 +79,7 @@ const cardVariants = {
       ease: [0.22, 1, 0.36, 1] as const,
     },
   },
-}
+};
 
 function ExploreAgents() {
   return (
@@ -100,7 +97,7 @@ function ExploreAgents() {
         transition={{
           duration: 12,
           repeat: Infinity,
-          ease: 'easeInOut',
+          ease: "easeInOut",
         }}
         className="pointer-events-none absolute -left-32 top-20 h-72 w-72 rounded-full bg-[#00D6A0]/[0.07] blur-[100px]"
       />
@@ -114,19 +111,18 @@ function ExploreAgents() {
         transition={{
           duration: 14,
           repeat: Infinity,
-          ease: 'easeInOut',
+          ease: "easeInOut",
         }}
         className="pointer-events-none absolute -right-32 bottom-10 h-72 w-72 rounded-full bg-[#00A87D]/[0.06] blur-[100px]"
       />
 
       <div className="relative mx-auto w-full max-w-6xl">
-
         {/* Heading */}
         <motion.div
           initial={{ opacity: 0, y: 25 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.4 }}
-          transition={{ duration: 0.7, ease: 'easeOut' }}
+          transition={{ duration: 0.7, ease: "easeOut" }}
           className="mb-10 flex w-full flex-col items-center text-center"
         >
           <motion.span
@@ -160,7 +156,7 @@ function ExploreAgents() {
           className="grid w-full gap-5 sm:grid-cols-2"
         >
           {agents.map((agent) => {
-            const Icon = agent.icon
+            const Icon = agent.icon;
 
             return (
               <motion.article
@@ -174,7 +170,6 @@ function ExploreAgents() {
               >
                 {/* Agent image */}
                 <div className="relative h-48 shrink-0 overflow-hidden rounded-xl bg-[#F0F8F3] sm:h-48 sm:w-[42%]">
-
                   {/* Image background glow */}
                   <motion.div
                     animate={{
@@ -184,7 +179,7 @@ function ExploreAgents() {
                     transition={{
                       duration: 5,
                       repeat: Infinity,
-                      ease: 'easeInOut',
+                      ease: "easeInOut",
                     }}
                     className="absolute left-1/2 top-1/2 h-32 w-32 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#00D6A0]/25 blur-2xl"
                   />
@@ -195,7 +190,7 @@ function ExploreAgents() {
                     transition={{
                       duration: 30,
                       repeat: Infinity,
-                      ease: 'linear',
+                      ease: "linear",
                     }}
                     className="absolute left-1/2 top-1/2 h-40 w-40 -translate-x-1/2 -translate-y-1/2 rounded-full border border-dashed border-[#00A87D]/15"
                   />
@@ -209,7 +204,7 @@ function ExploreAgents() {
                     transition={{
                       duration: 4,
                       repeat: Infinity,
-                      ease: 'easeInOut',
+                      ease: "easeInOut",
                     }}
                     whileHover={{ scale: 1.09 }}
                     className="relative z-10 h-full w-full object-contain p-3"
@@ -240,7 +235,7 @@ function ExploreAgents() {
                     transition={{
                       duration: 3,
                       repeat: Infinity,
-                      ease: 'easeInOut',
+                      ease: "easeInOut",
                     }}
                     className="absolute right-4 top-4 z-20 text-[#00A87D]"
                   >
@@ -295,22 +290,19 @@ function ExploreAgents() {
                     to="/explore"
                     className="mt-4 inline-flex w-fit items-center gap-1.5 text-xs font-semibold text-white transition-colors hover:text-white"
                   >
-                    <button className='flex justify-center items-center  rounded-lg py-2 px-2 bg-[#008A66]'>
-Explore agent
-
-<motion.span
-                      whileHover={{ x: 4, y: -3 }}
-                      transition={{ duration: 0.2 }}
-                    >
-                      <ArrowUpRight size={14} />
-                    </motion.span>
-
+                    <button className="flex justify-center items-center  rounded-lg py-2 px-2 bg-[#008A66]">
+                      Explore agent
+                      <motion.span
+                        whileHover={{ x: 4, y: -3 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        <ArrowUpRight size={14} />
+                      </motion.span>
                     </button>
-                    
                   </Link>
                 </div>
               </motion.article>
-            )
+            );
           })}
         </motion.div>
 
@@ -332,17 +324,16 @@ Explore agent
               transition={{
                 duration: 1.5,
                 repeat: Infinity,
-                ease: 'easeInOut',
+                ease: "easeInOut",
               }}
             >
               <ArrowUpRight size={16} />
             </motion.span>
           </Link>
         </motion.div>
-
       </div>
     </section>
-  )
+  );
 }
 
 export default ExploreAgents;
